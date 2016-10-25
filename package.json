@@ -1,0 +1,18 @@
+{
+  "name": "project-webshop-api",
+  "version": "1.0.0",
+  "description": "API for the webshop",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "\u0016https://github.com/n9iels/project-webshop-api"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "restify": "^4.1.1"
+  }
+}
