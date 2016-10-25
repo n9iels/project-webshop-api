@@ -3,6 +3,8 @@ var restify = require('restify');
 var server = restify.createServer({
     name: 'MyApp'
 });
+server.use(restify.authorizationParser());
+server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
 // Include endpoints

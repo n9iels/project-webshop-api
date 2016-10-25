@@ -1,19 +1,29 @@
 var Authenticate = require('../helpers/authenticate');
 var Products = {};
 
+/**
+* Products Contructor
+*
+* @method init
+* @param {Object} server  Restify Server Object
+*
+* @return {void}
+*/
 Products.init = function(server)
 {
-    // Endpoint for '/hello'
-    server.get('/hello', function (req, res, next)
+    // Endpoint for '/products' to receive all products in the database
+    server.get('products', function (req, res, next)
     {
-        res.send("Boe");
+        var query = req.query;
+
+        res.send("All products");
         next();
     });
-
-    server.post('/hello', Authenticate.check, function (req, res, next)
+    
+    // Endpoint for '/products:id' to receive a single product
+    server.get('products/:id', function(req, res, next)
     {
-        console.log("The request body is " + req.body);
-        res.send("New product added");
+        res.send("Product with id " + req.params.id);
         next();
     });
 };
