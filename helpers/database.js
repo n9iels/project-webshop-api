@@ -8,10 +8,11 @@ var mysql = require('mysql');
 */
 function Database() {
     this._connection = mysql.createConnection({
-        host     : 'localhost',
+        host     : '84.84.245.29',
         user     : 'dev_assignment1',
         password : 'Oz6A76w83HZe',
-        database : 'development_assignment1'
+        database : 'development_assignment1',
+        port:    1686
     });
 }
 
