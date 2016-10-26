@@ -87,5 +87,7 @@ Authenticate.admin = function(req, res, next)
     res.send(401, {message:"Not Authorized"});
 }
 
-module.exports.customer = Authenticate.customer;
-module.exports.admin = Authenticate.admin;
+module.exports = {
+    Customer: Authenticate.customer,
+    Admin: Authenticate.admin,
+};

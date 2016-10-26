@@ -1,7 +1,7 @@
 // Create server
 var restify = require('restify');
 var server = restify.createServer({
-    name: 'MyApp'
+    name: 'AZ Games'
 });
 server.use(restify.authorizationParser());
 server.use(restify.queryParser());
