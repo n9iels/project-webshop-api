@@ -1,5 +1,11 @@
+// Require the MySQL module
 var mysql = require('mysql');
 
+/**
+* Database Contructor
+*
+* @return {void}
+*/
 function Database() {
     this._connection = mysql.createConnection({
         host     : '84.84.245.29',
@@ -10,6 +16,15 @@ function Database() {
     });
 }
 
+/**
+* Execute a SQL query
+*
+* @method executeQuery
+* @param {string}   sql       Sql query to execute
+* @param {function} callback  Callback function used to return the result of the query 
+*
+* @return {void}
+*/
 Database.prototype.executeQuery = function (sql, callback)
 {
     this._connection.query(sql, function(err, rows, fields) {
