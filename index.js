@@ -1,7 +1,8 @@
 // Create server
 var restify = require('restify');
 var server = restify.createServer({
-    name: 'AZ Games'
+    name: 'AZ Games',
+    url: 'http://84.84.245.29:243'
 });
 server.use(restify.authorizationParser());
 server.use(restify.queryParser());
