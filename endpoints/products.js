@@ -1,4 +1,6 @@
 var Authenticate = require('../helpers/authenticate');
+var DatabaseHelper =  require('../helpers/database');
+var Database = new DatabaseHelper();
 var Products = {};
 
 /**
@@ -16,7 +18,11 @@ Products.init = function(server)
     {
         var query = req.query;
 
-        res.send("All products");
+        var test = Database.executeQuery("SELECT * FROM employee", function (rows)
+        {
+            res.send(rows);
+        });
+
         next();
     });
     
