@@ -1,5 +1,5 @@
 
-# Created by https://www.gitignore.io/api/windows,node,visualstudiocode,visualstudio,jetbrains
+# Created by https://www.gitignore.io/api/windows,node,visualstudiocode,visualstudio,jetbrains,visualstudiocode
 
 ### Windows ###
 # Windows image file caches
@@ -126,6 +126,9 @@ fabric.properties
 # modules.xml
 # .idea/misc.xml 
 # *.ipr
+
+
+### VisualStudioCode ###
 
 
 ### VisualStudio ###
