@@ -13,7 +13,7 @@ function Database() {
         user     : 'webshop',
         password : 'HQv@1rM0KUXXjpZw09WE',
         database : 'webshop',
-        port:    1686
+        port     : 1686
     });
 }
 
@@ -28,13 +28,13 @@ function Database() {
 */
 Database.prototype.executeQuery = function (sql, params, callback)
 {
-    this._connection.query(sql, params, function(err, rows, fields) {
-        if (err) {
-            fs.appendFile("./log/error.log", err.message + "\n");
-            console.error('error when execute query: ' + err.message);
+    this._connection.query(sql, params, function (error, results, fields) {
+        if (error) {
+            fs.appendFile("./log/error.log", "Error when execute query '" + sql + "'\n" + error.message + "\n\n");
+            console.error('error when execute query: ' + error.message);
         }
 
-        callback(rows);
+        return callback(results);
     });
 }
 

@@ -18,9 +18,14 @@ Products.init = function(server)
     {
         var query = req.query;
 
-        var test = Database.executeQuery("SELECT * FROM employee", function (rows)
+        var test = Database.executeQuery("SELECT * FROM User", [], function (result)
         {
-            res.send(rows);
+            if (result)
+            {
+                return res.send(result)
+            }
+
+            return res.send({message:"No results!"})
         });
 
         next();
