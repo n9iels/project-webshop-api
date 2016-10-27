@@ -1,5 +1,6 @@
-// Require the MySQL module
+// Require the MySQL and fileWrite module
 var mysql = require('mysql');
+var fs    = require('fs');
 
 /**
 * Database Contructor
@@ -29,8 +30,8 @@ Database.prototype.executeQuery = function (sql, callback)
 {
     this._connection.query(sql, function(err, rows, fields) {
         if (err) {
+            fs.appendFile("./log/error.log", err.message + "\n");
             console.error('error when execute query: ' + err.message);
-            return;
         }
 
         return callback(rows);

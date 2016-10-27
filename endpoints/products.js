@@ -1,7 +1,7 @@
-var Authenticate = require('../helpers/authenticate');
+var Authenticate   = require('../helpers/authenticate');
 var DatabaseHelper =  require('../helpers/database');
-var Database = new DatabaseHelper();
-var Products = {};
+var Database       = new DatabaseHelper();
+var Products       = {};
 
 /**
 * Products Contructor
