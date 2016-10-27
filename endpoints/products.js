@@ -4,13 +4,13 @@ var Database       = new DatabaseHelper();
 var Products       = {};
 
 /**
-* Products Contructor
-*
-* @method init
-* @param {Object} server  Restify Server Object
-*
-* @return {void}
-*/
+ * Products Contructor
+ *
+ * @method init
+ * @param {Object} server  Restify Server Object
+ *
+ * @return {void}
+ */
 Products.init = function(server)
 {
     // Endpoint for '/products' to receive all products in the database
@@ -18,7 +18,7 @@ Products.init = function(server)
     {
         var query = req.query;
 
-        var test = Database.executeQuery("SELECT * FROM User", [], function (result)
+        Database.executeQuery("SELECT * FROM User", [], function (result)
         {
             if (result)
             {

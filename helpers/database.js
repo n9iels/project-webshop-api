@@ -3,10 +3,10 @@ var mysql = require('mysql');
 var fs    = require('fs');
 
 /**
-* Database Contructor
-*
-* @return {void}
-*/
+ * Database Contructor
+ *
+ * @return {void}
+ */
 function Database() {
     this._pool = mysql.createPool({
         host              : '84.84.245.29',
@@ -19,14 +19,14 @@ function Database() {
 }
 
 /**
-* Execute a SQL query
-*
-* @method executeQuery
-* @param {string}   sql       Sql query to execute
-* @param {function} callback  Callback function used to return the result of the query 
-*
-* @return {void}
-*/
+ * Execute a SQL query
+ *
+ * @method executeQuery
+ * @param {string}   sql       Sql query to execute
+ * @param {function} callback  Callback function used to return the result of the query 
+ *
+ * @return {void}
+ */
 Database.prototype.executeQuery = function (sql, params, callback)
 {
     this._pool.getConnection(function(err, connection)

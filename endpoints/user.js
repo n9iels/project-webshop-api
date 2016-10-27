@@ -4,13 +4,13 @@ var Database       = new DatabaseHelper();
 var User           = {};
 
 /**
-* User Contructor
-*
-* @method init
-* @param {Object} server  Restify Server Object
-*
-* @return {void}
-*/
+ * User Contructor
+ *
+ * @method init
+ * @param {Object} server  Restify Server Object
+ *
+ * @return {void}
+ */
 User.init = function(server)
 {
     // Endpoint for '/user' to receive all products in the database

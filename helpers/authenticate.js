@@ -4,13 +4,13 @@ var Database       = new DatabaseHelper();
 var Authenticate   = {};
 
 /**
-* Check if the given credentials are valid
-*
-* @method authenticate
-* @param {Object} authorization Authorization header
-*
-* @return {string} Returns a json string with the result
-*/
+ * Check if the given credentials are valid
+ *
+ * @method authenticate
+ * @param {Object} authorization Authorization header
+ *
+ * @return {string} Returns a json string with the result
+ */
 Authenticate.authenticate = function(authorization, usertype, callback)
 {
     if (authorization.scheme == 'Bearer')
@@ -45,14 +45,14 @@ Authenticate.authenticate = function(authorization, usertype, callback)
 }
 
 /**
-* Check if a user is authorized
-*
-* @method authorize
-* @param {Object} user      User object
-* @param {string} usertype  Type of the user
-*
-* @return {bool} Returns true if the user is authorized, false otherwise
-*/
+ * Check if a user is authorized
+ *
+ * @method authorize
+ * @param {Object} user      User object
+ * @param {string} usertype  Type of the user
+ *
+ * @return {bool} Returns true if the user is authorized, false otherwise
+ */
 Authenticate.authorize = function(user, usertype)
 {
     if (user.user_type != usertype && user.user_type != "admin")
@@ -64,10 +64,10 @@ Authenticate.authorize = function(user, usertype)
 }
 
 /**
-* Check if a user has customer access
-*
-* @return {void}  Goes to the next handler if the user has access, abort otherwise
-*/
+ * Check if a user has customer access
+ *
+ * @return {void}  Goes to the next handler if the user has access, abort otherwise
+ */
 Authenticate.customer = function(req, res, next)
 {
     Authenticate.authenticate(req.authorization, 'customer', function (result)
