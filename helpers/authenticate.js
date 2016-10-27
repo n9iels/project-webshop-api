@@ -1,4 +1,6 @@
-var Authenticate = {};
+var DatabaseHelper =  require('../helpers/database');
+var Database       = new DatabaseHelper();
+var Authenticate   = {};
 
 /**
 * Check if the given credentials are valid
@@ -8,13 +10,13 @@ var Authenticate = {};
 *
 * @return {string} Returns a json string with the result
 */
-Authenticate.authenticate = function(authorization)
+Authenticate.authenticate = function(authorization, usertype, callback)
 {
     if (authorization.scheme == 'Bearer')
     {
         var accessToken = authorization.credentials;
 
-        // Check if the access token is valid
+        return callback(false)
     }
     else if (authorization.scheme == 'Basic')
     {
@@ -22,10 +24,23 @@ Authenticate.authenticate = function(authorization)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-    }
+        Database.executeQuery("SELECT * FROM Session JOIN User ON Session.user_id = User.user_id WHERE username = ?", [username], function (rows)
+        {
+            if (rows.length > 0)
+            {
+                if (Authenticate.authorize(rows[0], usertype))
+                {
+                    return callback(true);
+                }
+            }
 
-    // Return a json object with the result
-    return JSON.stringify(result);
+            return callback(false)
+        });
+    }
+    else
+    {
+        return callback(false)
+    }
 }
 
 /**
@@ -39,7 +54,7 @@ Authenticate.authenticate = function(authorization)
 */
 Authenticate.authorize = function(user, usertype)
 {
-    if (user.type != usertype && user.type != "admin")
+    if (user.user_type != usertype && user.user_type != "admin")
     {
         return false;
     }
@@ -54,40 +69,36 @@ Authenticate.authorize = function(user, usertype)
 */
 Authenticate.customer = function(req, res, next)
 {
-    var authenticate = JSON.parse(Authenticate.authenticate(req.authorization));
-    
-    if (authenticate.success)
+    Authenticate.authenticate(req.authorization, 'customer', function (result)
     {
-        if (Authenticate.authorize(authenticate.user, 'customer'))
+        if (result)
         {
             next();
         }
-    }
 
-    res.send(401, {message:"Not Authorized"});
+        res.send(401, {message:"No Access"});
+    });
 }
 
 /**
-* Check if a user has customer access
+* Check if a user has admin access
 *
 * @return {void}  Goes to the next handler if the user has access, abort otherwise
 */
 Authenticate.admin = function(req, res, next)
 {
-    var authenticate = JSON.parse(Authenticate.authenticate(req.authorization));
-    
-     if (authenticate.success)
-     {
-        if (Authenticate.authorize(authenticate.user, 'admin'))
+    Authenticate.authenticate(req.authorization, 'admin', function (result)
+    {
+        if (result)
         {
             next();
         }
-    }
 
-    res.send(401, {message:"Not Authorized"});
+        res.send(401, {message:"No Access"});
+    });
 }
 
 module.exports = {
-    Customer: Authenticate.customer,
-    Admin: Authenticate.admin,
+    customer: Authenticate.customer,
+    admin: Authenticate.admin,
 };

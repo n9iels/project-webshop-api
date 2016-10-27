@@ -10,9 +10,9 @@ var fs    = require('fs');
 function Database() {
     this._connection = mysql.createConnection({
         host     : '84.84.245.29',
-        user     : 'dev_assignment1',
-        password : 'Oz6A76w83HZe',
-        database : 'development_assignment1',
+        user     : 'webshop',
+        password : 'HQv@1rM0KUXXjpZw09WE',
+        database : 'webshop',
         port:    1686
     });
 }
@@ -26,15 +26,15 @@ function Database() {
 *
 * @return {void}
 */
-Database.prototype.executeQuery = function (sql, callback)
+Database.prototype.executeQuery = function (sql, params, callback)
 {
-    this._connection.query(sql, function(err, rows, fields) {
+    this._connection.query(sql, params, function(err, rows, fields) {
         if (err) {
             fs.appendFile("./log/error.log", err.message + "\n");
             console.error('error when execute query: ' + err.message);
         }
 
-        return callback(rows);
+        callback(rows);
     });
 }
 

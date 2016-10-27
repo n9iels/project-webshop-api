@@ -9,6 +9,7 @@ server.use(restify.bodyParser());
 
 // Include endpoints
 var products = require('./endpoints/products')(server);
+var user     = require('./endpoints/user')(server);
 
 // Listen to port 8080
 server.listen(8080, function() {
