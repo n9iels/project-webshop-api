@@ -28,7 +28,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         {
             if (rows.length > 0)
             {
-                if (Authenticate.authorize(rows[0], usertype))
+                if (Authenticate.authorize(rows[0], usertype) && rows[0].password == password)
                 {
                     return callback(true);
                 }
