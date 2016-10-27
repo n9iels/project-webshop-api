@@ -9,11 +9,12 @@ var fs    = require('fs');
 */
 function Database() {
     this._pool = mysql.createPool({
-        host     : '84.84.245.29',
-        user     : 'webshop',
-        password : 'HQv@1rM0KUXXjpZw09WE',
-        database : 'webshop',
-        port     : 1686
+        host              : '84.84.245.29',
+        user              : 'webshop',
+        password          : 'HQv@1rM0KUXXjpZw09WE',
+        database          : 'webshop',
+        port              : 1686,
+        multipleStatements: true
     });
 }
 

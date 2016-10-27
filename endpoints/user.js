@@ -19,6 +19,32 @@ User.init = function(server)
         res.send("yeah");
         next();
     });
+
+    // Endpoint for '/login' to generate a login token
+    server.post('user/login', function (req, res, next)
+    {
+        var post = JSON.parse(req.body);
+
+        // Get username and password
+        var username = post.username;
+        var password = post.password;
+        
+        Database.executeQuery("SELECT * FROM User WHERE username = ? AND password = ?", [username, password], function (result)
+        {
+            if (result.length > 0)
+            {
+                Authenticate.generateToken(result[0], function (accessToken) {
+                    res.send({access_token:accessToken});
+                });
+            }
+            else
+            {
+                res.send(401, "Bad credentials")
+            }
+        });
+
+        next();
+    });
 };
 
 module.exports = function (server)

@@ -1,4 +1,5 @@
 var DatabaseHelper =  require('../helpers/database');
+var crypto         = require('crypto');
 var Database       = new DatabaseHelper();
 var Authenticate   = {};
 
@@ -76,15 +77,15 @@ Authenticate.customer = function(req, res, next)
             next();
         }
 
-        res.send(401, {message:"No Access"});
+        res.send(401, {message:"Bad credentials"});
     });
 }
 
 /**
-* Check if a user has admin access
-*
-* @return {void}  Goes to the next handler if the user has access, abort otherwise
-*/
+ * Check if a user has admin access
+ *
+ * @return {void}  Goes to the next handler if the user has access, abort otherwise
+ */
 Authenticate.admin = function(req, res, next)
 {
     Authenticate.authenticate(req.authorization, 'admin', function (result)
@@ -94,11 +95,25 @@ Authenticate.admin = function(req, res, next)
             next();
         }
 
-        res.send(401, {message:"No Access"});
+        res.send(401, {message:"Bad credentials"});
     });
+}
+
+/**
+ * Generate a access token for a user
+ * 
+ * @return {void}
+ */
+Authenticate.generateToken = function(user, callback)
+{
+    var accessToken = crypto.randomBytes(48).toString('base64');
+    
+    Database.executeQuery("DELETE FROM Session WHERE user_id = ?; INSERT INTO Session VALUES (?, ?)", [user.user_id, user.user_id, accessToken], function (result) {});
+    callback(accessToken);
 }
 
 module.exports = {
     customer: Authenticate.customer,
     admin: Authenticate.admin,
+    generateToken: Authenticate.generateToken
 };
