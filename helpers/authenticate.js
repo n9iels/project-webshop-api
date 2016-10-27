@@ -16,7 +16,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
     {
         var accessToken = authorization.credentials;
 
-        return callback(false)
+        return callback(false);
     }
     else if (authorization.scheme == 'Basic')
     {
@@ -34,12 +34,12 @@ Authenticate.authenticate = function(authorization, usertype, callback)
                 }
             }
 
-            return callback(false)
+            return callback(false);
         });
     }
     else
     {
-        return callback(false)
+        return callback(false);
     }
 }
 
