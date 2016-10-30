@@ -28,9 +28,8 @@ Products.init = function(server)
     server.get('products', function (req, res, next)
     {
         var query = req.query;
-        console.log(query);
 
-        Database.executeQuery("SELECT * FROM Game", [], function (result)
+        Database.executeQuery("SELECT * FROM game", [], function (result)
         {
             if (result)
             {
