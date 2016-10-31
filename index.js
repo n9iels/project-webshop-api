@@ -3,6 +3,12 @@ var restify = require('restify');
 var server = restify.createServer({
     name: 'AZ Games'
 });
+
+// Allow cross-origin requests
+server.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  next();
+});
 server.use(restify.authorizationParser());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
