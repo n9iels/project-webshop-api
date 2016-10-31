@@ -49,12 +49,12 @@ Products.init = function(server)
 
         Database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.ean_number = ? AND g.pi_id = pii.pi_id", [req.params.ean_number], function (result)
         {
-            if (result)
+            if (result.length > 0)
             {
               return res.send(result);
             }
 
-            return res.send({message:"No results!"})
+            return res.send(404, {message:"No results!"})
         });
 
         next();
