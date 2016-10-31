@@ -29,7 +29,7 @@ User.init = function(server)
         var username = post.username;
         var password = post.password;
         
-        Database.executeQuery("SELECT * FROM User WHERE username = ? AND password = ?", [username, password], function (result)
+        Database.executeQuery("SELECT * FROM user WHERE username = ? AND password = ?", [username, password], function (result)
         {
             if (result.length > 0)
             {
