@@ -48,6 +48,26 @@ User.init = function(server)
         next();
     });
 
+    // Endpoint for '/logout' to delete a login token
+    server.post('user/logout', function (req, res, next)
+    {
+        // JSON.parse moet weg
+        var post = req.body;
+        // var post = JSON.parse(req.body);
+
+        // Get user id 
+        var user_id = post.user_id;
+        
+        Database.executeQuery("DELETE FROM `session` WHERE user_id = ?", [user_id], function (result)
+        {
+          res.send("Successfully deleted user (R.I.P)")
+        });
+
+
+
+        next();
+    });
+
     server.post('user/register', function (req, res, next)
     {
         var post = req.body;
@@ -75,3 +95,4 @@ module.exports = function (server)
 {
     return User.init(server);
 }
+
