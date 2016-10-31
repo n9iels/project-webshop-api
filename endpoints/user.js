@@ -25,11 +25,11 @@ User.init = function(server)
     {
         var post = JSON.parse(req.body);
 
-        // Get username and password
-        var username = post.username;
+        // Get email and password
+        var email    = post.email;
         var password = post.password;
         
-        Database.executeQuery("SELECT * FROM user WHERE username = ? AND password = ?", [username, password], function (result)
+        Database.executeQuery("SELECT * FROM user WHERE email = ? AND password = ?", [email, password], function (result)
         {
             if (result.length > 0)
             {

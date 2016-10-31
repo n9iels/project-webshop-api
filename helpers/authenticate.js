@@ -108,7 +108,7 @@ Authenticate.generateToken = function(user, callback)
 {
     var accessToken = crypto.randomBytes(48).toString('base64');
     
-    Database.executeQuery("DELETE FROM Session WHERE user_id = ?; INSERT INTO Session VALUES (?, ?)", [user.user_id, user.user_id, accessToken], function (result) {});
+    Database.executeQuery("DELETE FROM session WHERE user_id = ?; INSERT INTO session VALUES (?, ?)", [user.user_id, user.user_id, accessToken], function (result) {});
     callback(accessToken);
 }
 
