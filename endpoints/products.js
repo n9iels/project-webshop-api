@@ -29,7 +29,7 @@ Products.init = function(server)
     {
         var query = req.query;
 
-        Database.executeQuery("SELECT * FROM game", [], function (result)
+        Database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.pi_id = pii.pi_id", [], function (result)
         {
             if (result)
             {
@@ -43,9 +43,20 @@ Products.init = function(server)
     });
     
     // Endpoint for '/products:id' to receive a single product
-    server.get('products/:id', function(req, res, next)
+    server.get('products/:ean_number', function(req, res, next)
     {
-        res.send("Product with id " + req.params.id);
+        var query = req.query;
+
+        Database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.ean_number = ? AND g.pi_id = pii.pi_id", [req.params.ean_number], function (result)
+        {
+            if (result)
+            {
+              return res.send(result);
+            }
+
+            return res.send({message:"No results!"})
+        });
+
         next();
     });
 };
@@ -54,3 +65,54 @@ module.exports = function (server)
 {
     return Products.init(server);
 }
+
+/**
+ *    // Endpoint for '/products:id' to receive a single product
+    server.get('products/:id', function(req, res, next)
+    {
+        
+        res.send("Product with id " + req.params.id);
+        next();
+    });
+ */
+
+/**
+ * // Endpoint for '/products:id' to receive a single product
+    server.get('products/:id', function(req, res, next)
+    {
+        var query = req.query;
+
+        Database.executeQuery("SELECT * FROM game WHERE ean_number = ?", [req.params.id], function (result)
+        {
+            if (result)
+            {
+              return res.send(result);
+            }
+
+            return res.send({message:"No results!"})
+        });
+
+        next();
+    });
+ * * 
+ */
+
+/**
+ *     // Endpoint for '/products' to receive all products in the database
+    server.get('products', function (req, res, next)
+    {
+        var query = req.query;
+
+        Database.executeQuery("SELECT * FROM game", [], function (result)
+        {
+            if (result)
+            {
+                return res.send(result)
+            }
+
+            return res.send({message:"No results!"})
+        });
+
+        next();
+    });
+ */

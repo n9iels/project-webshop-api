@@ -43,6 +43,30 @@ User.init = function(server)
             }
         });
 
+
+
+        next();
+    });
+
+    server.post('user/register', function (req, res, next)
+    {
+        var post = req.body;
+
+        // Get e-mail, password, first_name, surname, gender, date_of_birth, phone_number
+        var e_mail = post.e_mail;
+        var password = post.password;
+        var first_name = post.first_name;
+        var surname = post.surname;
+        var gender = post.gender;
+        var date_of_birth = post.date_of_birth;
+        var phone_number = post.phone_number;
+        
+        Database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number) VALUES (?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number], function (result)
+        //  Database.executeQuery("SELECT * FROM User WHERE username = ? AND password = ?", [username, password], function (result)
+        {           
+          res.send("You have been successfully registered :p")
+        });
+
         next();
     });
 };
