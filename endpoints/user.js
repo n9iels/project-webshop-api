@@ -77,18 +77,20 @@ User.init = function(server)
         // Get user id and current password
         var user_id = post.user_id; 
         var password = post.password;
-        var security_question = post.security_question;
-        var security_question_answer = post.security_question_answer;
+        var secret_question = post.secret_question;
+        var secret_question_answer = post.secret_question_answer;
         
-        Database.executeQuery("SELECT * FROM user WHERE user_id = ? AND password = ? AND security_question = ? AND security_question_answer = ?", [user_id, password, security_question, security_question_answer], function (result)
+        Database.executeQuery("SELECT * FROM user WHERE user_id = ? AND secret_question = ? AND secret_question_answer = ?", [user_id, secret_question, secret_question_answer], function (result)
         {
-            if (result.length > 0)
+            if (result.length == 0)
             {
-                Database.executeQuery("UPDATE user SET password = ? WHERE user_id = ?", [password, user_id], function (result)
-                {
-                  res.send("The password for the user has been successfully reset")
-                });
+                res.send(404)
             }
+        });
+
+        Database.executeQuery("UPDATE user SET password = ? WHERE user_id = ?", [password, user_id], function (result)
+        {
+          res.send("The password for the user has been successfully reset")
         });
 
         next();
@@ -98,7 +100,7 @@ User.init = function(server)
     {
         var post = req.body;
 
-        // Get e-mail, password, first_name, surname, gender, date_of_birth, phone_number, security_question and security_question_answer
+        // Get e-mail, password, first_name, surname, gender, date_of_birth, phone_number, secret_question and secret_question_answer
         var e_mail = post.e_mail;
         var password = post.password;
         var first_name = post.first_name;
@@ -106,10 +108,10 @@ User.init = function(server)
         var gender = post.gender;
         var date_of_birth = post.date_of_birth;
         var phone_number = post.phone_number;
-        var security_question = post.security_question;
-        var security_question_answer = post.security_question_answer;
+        var secret_question = post.secret_question;
+        var secret_question_answer = post.secret_question_answer;
         
-        Database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number, security_question, security_question_answer) VALUES (?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number, security_question, security_question_answer], function (result)
+        Database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number, security_question, security_question_answer], function (result)
         //  Database.executeQuery("SELECT * FROM User WHERE username = ? AND password = ?", [username, password], function (result)
         {           
           res.send("You have been successfully registered :p")
