@@ -67,52 +67,13 @@ module.exports = function (server)
 }
 
 /**
- *    // Endpoint for '/products:id' to receive a single product
-    server.get('products/:id', function(req, res, next)
-    {
-        
-        res.send("Product with id " + req.params.id);
-        next();
-    });
+ *  
  */
 
 /**
- * // Endpoint for '/products:id' to receive a single product
-    server.get('products/:id', function(req, res, next)
-    {
-        var query = req.query;
-
-        Database.executeQuery("SELECT * FROM game WHERE ean_number = ?", [req.params.id], function (result)
-        {
-            if (result)
-            {
-              return res.send(result);
-            }
-
-            return res.send({message:"No results!"})
-        });
-
-        next();
-    });
- * * 
+ * 
  */
 
 /**
- *     // Endpoint for '/products' to receive all products in the database
-    server.get('products', function (req, res, next)
-    {
-        var query = req.query;
-
-        Database.executeQuery("SELECT * FROM game", [], function (result)
-        {
-            if (result)
-            {
-                return res.send(result)
-            }
-
-            return res.send({message:"No results!"})
-        });
-
-        next();
-    });
+ *    
  */
