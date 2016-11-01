@@ -14,14 +14,20 @@ var User           = {};
 User.init = function(server)
 {
     // Endpoint for '/user' to receive all products in the database
-    server.get('customer', Authenticate.customer, function (req, res, next)
+    server.get('user', Authenticate.customer, function (req, res, next)
     {
-        next();
-    });
-
-    server.get('admin', Authenticate.admin, function (req, res, next)
-    {
-        next();
+        // If the post data is correctly set we can check the credentials
+        Database.executeQuery("SELECT * FROM user JOIN session ON user.user_id = session.user_id WHERE session.access_token = ?", [req.authorization.credentials], function (result)
+        {
+            if (result.length > 0)
+            {
+                res.send(result);
+            }
+            else
+            {
+                res.send(401, "Bad credentials")
+            }
+        });
     });
 
     // Endpoint for '/login' to generate a login token

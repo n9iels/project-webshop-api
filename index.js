@@ -6,7 +6,8 @@ var server = restify.createServer({
 
 // Allow cross-origin requests
 server.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost");
+  res.setHeader('Access-Control-Allow-Credentials', true);
   next();
 });
 server.use(restify.authorizationParser());

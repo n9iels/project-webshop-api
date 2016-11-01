@@ -15,9 +15,23 @@ Authenticate.authenticate = function(authorization, usertype, callback)
 {
     if (authorization.scheme == 'Bearer')
     {
-        var accessToken = authorization.credentials;
+        var access_token = authorization.credentials;
 
-        return callback(false);
+        // Check if the accesstoken is valid
+        Database.executeQuery("SELECT * FROM user JOIN session ON user.user_id = session.user_id WHERE session.access_token = ?", [access_token], function (rows)
+        {
+            if (rows.length > 0)
+            {
+                if (Authenticate.authorize(rows[0], usertype))
+                {
+                    callback(true);
+                }
+            }
+            else
+            {
+                callback(false);
+            }
+        });
     }
     else if (authorization.scheme == 'Basic')
     {
@@ -25,7 +39,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-        Database.executeQuery("SELECT * FROM Session JOIN User ON Session.user_id = User.user_id WHERE username = ?", [username], function (rows)
+        Database.executeQuery("SELECT * FROM session JOIN user ON session.user_id = user.user_id WHERE username = ?", [username], function (rows)
         {
             if (rows.length > 0)
             {
@@ -34,8 +48,10 @@ Authenticate.authenticate = function(authorization, usertype, callback)
                     return callback(true);
                 }
             }
-
-            return callback(false);
+            else
+            {
+                callback(false);
+            }
         });
     }
     else
@@ -76,8 +92,10 @@ Authenticate.customer = function(req, res, next)
         {
             next();
         }
-
-        res.send(401, {message:"Bad credentials"});
+        else
+        {
+            res.send(401, {message:"Bad credentials"});
+        }        
     });
 }
 
