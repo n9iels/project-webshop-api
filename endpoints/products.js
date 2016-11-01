@@ -41,6 +41,8 @@ Products.init = function(server)
 
         next();
     });
+
+    
     
     // Endpoint for '/products:id' to receive a single product
     server.get('products/:ean_number', function(req, res, next)
@@ -66,14 +68,5 @@ module.exports = function (server)
     return Products.init(server);
 }
 
-/**
- *  
- */
 
-/**
- * 
- */
 
-/**
- *    
- */
