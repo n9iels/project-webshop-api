@@ -14,9 +14,13 @@ var User           = {};
 User.init = function(server)
 {
     // Endpoint for '/user' to receive all products in the database
-    server.get('user', Authenticate.customer, function (req, res, next)
+    server.get('customer', Authenticate.customer, function (req, res, next)
     {
-        res.send("yeah");
+        next();
+    });
+
+    server.get('admin', Authenticate.admin, function (req, res, next)
+    {
         next();
     });
 
