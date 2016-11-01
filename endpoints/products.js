@@ -21,6 +21,7 @@ var Products       = {};
  * 
  * VOORBEELD QUERY: http://localhost:8080/products?genre=actie&price=50-90&name=battlefield
  * VOORBEELD QUERY 2: http://localhost:8080/products
+ * http://localhost:8080/products/filter?platform=PS4
  */
 Products.init = function(server)
 {
@@ -52,7 +53,7 @@ Products.init = function(server)
         var platform = query.platform;     // game platform
         var release_date = query.release_date;     // game release date
         var pegi_age = query.pegi_age;     // game pegi age
-        var stock = query.platform;     // game stock
+        var stock = query.stock;     // game stock
         var price1 = query.price1;        // game price 1
         var price2 = query.price2;        // game price 2
 
@@ -70,20 +71,20 @@ Products.init = function(server)
         
         if (ean_number != null) { base_sql += "AND ean_number = " + ean_number + " "; }
 
-        if (platform != null) { base_sql += "AND platform = " + platform + " "; }
-        if (release_date != null) { base_sql += "AND release_date = " + release_date + " "; }
-        if (pegi_age != null) { base_sql += "AND pegi_age = " + pegi_age + " "; }
-        if (stock != null) { base_sql += "AND stock = " + stock + " "; }
+        if (platform != null) { base_sql += "AND platform = '" + platform + "' "; }
+        if (release_date != null) { base_sql += "AND release_date = '" + release_date + "' "; }
+        if (pegi_age != null) { base_sql += "AND pegi_age = '" + pegi_age + "' "; }
+        if (stock != null) { base_sql += "AND stock = '" + stock + "' "; }
         if (price1 != null && price2 != null) { base_sql += "AND price BETWEEN " + price1 + " AND " + price2 + " "; }
 
-        if (publisher != null) { base_sql += "AND publisher = " + publisher + " "; }
-        if (title != null) { base_sql += "AND title = " + title + " "; }
-        if (subtitle != null) { base_sql += "AND subtitle = " + subtitle + " "; }
-        if (genre != null) { base_sql += "AND genre = " + genre + " "; }
-        if (franchise != null) { base_sql += "AND franchise = " + franchise + " "; }
-        if (description != null) { base_sql += "AND description = " + description + " "; }
+        if (publisher != null) { base_sql += "AND publisher = '" + publisher + "' "; }
+        if (title != null) { base_sql += "AND title = '" + title + "' "; }
+        if (subtitle != null) { base_sql += "AND subtitle = '" + subtitle + "' "; }
+        if (genre != null) { base_sql += "AND genre = '" + genre + "' "; }
+        if (franchise != null) { base_sql += "AND franchise = '" + franchise + "' "; }
+        if (description != null) { base_sql += "AND description = '" + description + "' "; }
 
-        Database.executeQuery(sql, [], function (result)
+        Database.executeQuery(base_sql, [], function (result)
           {
             if (result) {
                 return res.send(result);
