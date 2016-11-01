@@ -38,7 +38,7 @@ Database.prototype.executeQuery = function (sql, params, callback)
                 console.error('error when execute query: ' + error.message);
             }
 
-            callback(results);
+            callback(results, error);
             connection.release();
         });
     });
