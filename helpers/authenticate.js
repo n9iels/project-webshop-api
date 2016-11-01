@@ -39,7 +39,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-        Database.executeQuery("SELECT * FROM session JOIN user ON session.user_id = user.user_id WHERE username = ?", [username], function (rows)
+        Database.executeQuery("SELECT * FROM user WHERE username = ? AND password = password", [username, password], function (rows)
         {
             if (rows.length > 0)
             {
@@ -126,8 +126,9 @@ Authenticate.generateToken = function(user, callback)
 {
     var accessToken = crypto.randomBytes(48).toString('base64');
     
-    Database.executeQuery("DELETE FROM session WHERE user_id = ?; INSERT INTO session VALUES (?, ?)", [user.user_id, user.user_id, accessToken], function (result) {});
-    callback(accessToken);
+    Database.executeQuery("DELETE FROM session WHERE user_id = ?; INSERT INTO session VALUES (?, ?)", [user.user_id, user.user_id, accessToken], function (result) {
+        callback(accessToken);
+    });
 }
 
 module.exports = {
