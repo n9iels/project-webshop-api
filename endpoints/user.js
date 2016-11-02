@@ -51,7 +51,7 @@ User.init = function(server)
             if (result.length > 0)
             {
                 Authenticate.generateToken(result[0], function (accessToken) {
-                    res.send({access_token:accessToken});
+                    res.send({access_token:accessToken, user_id:user_id});
                 });
             }
             else
@@ -99,7 +99,7 @@ User.init = function(server)
         {
             if (result.length == 0)
             {
-                res.send(404)
+                res.send(401)
             }
         });
 
