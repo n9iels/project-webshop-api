@@ -51,7 +51,7 @@ User.init = function(server)
             if (result.length > 0)
             {
                 Authenticate.generateToken(result[0], function (accessToken) {
-                    res.send({access_token:accessToken, user_id:user_id});
+                    res.send({access_token:accessToken});
                 });
             }
             else
