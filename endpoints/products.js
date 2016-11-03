@@ -52,20 +52,20 @@ Products.init = function(server, database)
 
         var base_sql = "SELECT * FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1 ";
         
-        if (ean_number != null && ean_number != "") { base_sql += "AND ean_number = " + ean_number + " "; }
+        if (ean_number != null && ean_number != "") { base_sql += "AND ean_number = " + database.escape(ean_number); }
 
-        if (platform != null && platform != "") { base_sql += "AND platform = " + database.escape(platform) + " "; }
-        if (release_date != null && release_date != "") { base_sql += "AND release_date = " + database.escape(release_date) + " "; }
-        if (pegi_age != null && pegi_age != "") { base_sql += "AND pegi_age = " + database.escape(pegi_age) + " "; }
-        if (stock != null && stock != "") { base_sql += "AND stock = " + database.escape(stock) + " "; }
-        if (price1 != null && price2 != null && price1 != "" && price2 != "") { database.escape(base_sql) += "AND price BETWEEN " + database.escape(price1) + " AND " + database.escape(price2) + " "; }
+        if (platform != null && platform != "") { base_sql += "AND platform = " + database.escape(platform); }
+        if (release_date != null && release_date != "") { base_sql += "AND release_date = " + database.escape(release_date); }
+        if (pegi_age != null && pegi_age != "") { base_sql += "AND pegi_age = " + database.escape(pegi_age); }
+        if (stock != null && stock != "") { base_sql += "AND stock = " + database.escape(stock); }
+        if (price1 != null && price2 != null && price1 != "" && price2 != "") { database.escape(base_sql) += "AND price BETWEEN " + database.escape(price1) + " AND " + database.escape(price2); }
 
-        if (publisher != null && publisher != "") { base_sql += "AND publisher = " + database.escape(publisher) + " "; }
-        if (title != null && title != "") { base_sql += "AND title = " + database.escape(title) + " "; }
-        if (subtitle != null && subtitle != "") { base_sql += "AND subtitle = " + database.escape(subtitle) + " "; }
-        if (genre != null && genre != "") { base_sql += "AND genre = " + database.escape(genre) + " "; }
-        if (franchise != null && franchise != "") { base_sql += "AND franchise = " + database.escape(franchise) + " "; }
-        if (description != null && description != "") { base_sql += "AND description = " + database.escape(description) + " "; }
+        if (publisher != null && publisher != "") { base_sql += "AND publisher = " + database.escape(publisher); }
+        if (title != null && title != "") { base_sql += "AND title = " + database.escape(title); }
+        if (subtitle != null && subtitle != "") { base_sql += "AND subtitle = " + database.escape(subtitle); }
+        if (genre != null && genre != "") { base_sql += "AND genre = " + database.escape(genre); }
+        if (franchise != null && franchise != "") { base_sql += "AND franchise = " + database.escape(franchise); }
+        if (description != null && description != "") { base_sql += "AND description = " + database.escape(description); }
 
         database.executeQuery(base_sql, [], function (result)
           {
