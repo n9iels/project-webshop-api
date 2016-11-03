@@ -1,13 +1,14 @@
-var Authenticate   = require('../helpers/authenticate');
-var DatabaseHelper = require('../helpers/database');
-var Database       = new DatabaseHelper();
-var Products       = {};
+/**
+ * Products endpoint related to products activities
+ */
+var Products = {};
 
 /**
  * Products Contructor
  *
  * @method init
- * @param {Object} server  Restify Server Object
+ * @param {Object} server    Restify Server Object
+ * @param {Object} database  Database object
  *
  * @return {void}
  */
@@ -23,14 +24,14 @@ var Products       = {};
  * VOORBEELD QUERY 2: http://localhost:8080/products
  * http://localhost:8080/products/filter?platform=PS4
  */
-Products.init = function(server)
+Products.init = function(server, database)
 {
     // Endpoint for '/products' to receive all products in the database
     server.get('products', function (req, res, next)
     {
         var query = req.query;
 
-        Database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.pi_id = pii.pi_id", [], function (result)
+        database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.pi_id = pii.pi_id", [], function (result)
         {
             if (result)
             {
@@ -84,7 +85,7 @@ Products.init = function(server)
         if (franchise != null) { base_sql += "AND franchise = '" + franchise + "' "; }
         if (description != null) { base_sql += "AND description = '" + description + "' "; }
 
-        Database.executeQuery(base_sql, [], function (result)
+        database.executeQuery(base_sql, [], function (result)
           {
             if (result) {
                 return res.send(result);
@@ -100,7 +101,7 @@ Products.init = function(server)
     {
         var query = req.query;
 
-        Database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.ean_number = ? AND g.pi_id = pii.pi_id", [req.params.ean_number], function (result)
+        database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.ean_number = ? AND g.pi_id = pii.pi_id", [req.params.ean_number], function (result)
         {
             if (result.length > 0)
             {
@@ -114,9 +115,9 @@ Products.init = function(server)
     });
 };
 
-module.exports = function (server)
+module.exports = function (server, database)
 {
-    return Products.init(server);
+    return Products.init(server, database);
 }
 
 

@@ -1,10 +1,17 @@
+// Import modules
+var DatabaseHelper = require('./helpers/database');
+var Authenticate   = require('./helpers/authenticate');
+var restify        = require('restify');
+
+// Create database connection
+var Database = new DatabaseHelper();
+
 // Create server
-var restify = require('restify');
 var server = restify.createServer({
     name: 'AZ Games'
 });
 
-// Allow cross-origin requests
+// Configure restify
 restify.CORS.ALLOW_HEADERS.push('authorization');
 server.pre(restify.CORS());
 server.use(restify.authorizationParser());
@@ -12,10 +19,10 @@ server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
 // Include endpoints
-var products = require('./endpoints/products')(server);
-var user     = require('./endpoints/user')(server);
+var products = require('./endpoints/products')(server, Database);
+var user     = require('./endpoints/user')(server, Database);
 
-// Listen to port 8080
+// Start server and listen to port 8080
 server.listen(8080, function() {
   console.log('%s listening at %s', server.name, server.url);
 });
