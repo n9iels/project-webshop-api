@@ -45,4 +45,9 @@ Database.prototype.executeQuery = function (sql, params, callback)
     });
 }
 
+Database.prototype.escape = function (string)
+{
+    return this._pool.escape(string);
+}
+
 module.exports = Database;
