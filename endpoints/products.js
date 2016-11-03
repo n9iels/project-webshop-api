@@ -119,8 +119,3 @@ module.exports = function (server, database)
 {
     return Products.init(server, database);
 }
-
-
-
-
-

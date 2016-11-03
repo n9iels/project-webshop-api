@@ -1,6 +1,5 @@
 // Import modules
 var DatabaseHelper = require('./helpers/database');
-var Authenticate   = require('./helpers/authenticate');
 var restify        = require('restify');
 
 // Create database connection

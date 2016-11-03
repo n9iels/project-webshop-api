@@ -1,3 +1,5 @@
+var Authenticate = require('../helpers/authenticate');
+
 /**
  * User class to define endpoints related to user activities
  */
@@ -147,6 +149,3 @@ module.exports = function (server, database)
 {
     return User.init(server, database);
 }
-
-
-
