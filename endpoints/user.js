@@ -1,7 +1,9 @@
-var Authenticate   = require('../helpers/authenticate');
-var DatabaseHelper =  require('../helpers/database');
-var Database       = new DatabaseHelper();
-var User           = {};
+var Authenticate = require('../helpers/authenticate');
+
+/**
+ * User class to define endpoints related to user activities
+ */
+var User = {};
 
 /**
  * User Contructor
@@ -11,13 +13,13 @@ var User           = {};
  *
  * @return {void}
  */
-User.init = function(server)
+User.init = function(server, database)
 {
     // Endpoint for '/user' to receive all products in the database
     server.get('user', Authenticate.customer, function (req, res, next)
     {
         // If the post data is correctly set we can check the credentials
-        Database.executeQuery("SELECT * FROM user JOIN session ON user.user_id = session.user_id WHERE session.access_token = ?", [req.authorization.credentials], function (result)
+        database.executeQuery("SELECT * FROM user JOIN session ON user.user_id = session.user_id WHERE session.access_token = ?", [req.authorization.credentials], function (result)
         {
             if (result.length > 0)
             {
@@ -46,7 +48,7 @@ User.init = function(server)
         }
         
         // If the post data is correctly set we can check the credentials
-        Database.executeQuery("SELECT * FROM user WHERE email = ? AND password = ?", [email, password], function (result)
+        database.executeQuery("SELECT * FROM user WHERE email = ? AND password = ?", [email, password], function (result)
         {
             if (result.length > 0)
             {
@@ -71,7 +73,7 @@ User.init = function(server)
         // Get user id 
         var user_id = post.user_id;
         
-        Database.executeQuery("DELETE FROM session WHERE user_id = ?", [user_id], function (result)
+        database.executeQuery("DELETE FROM session WHERE user_id = ?", [user_id], function (result)
         {
           res.send("Successfully deleted user (R.I.P)")
         });
@@ -91,7 +93,7 @@ User.init = function(server)
         var secret_question = post.secret_question;
         var secret_question_answer = post.secret_question_answer;
         
-        Database.executeQuery("SELECT * FROM user WHERE user_id = ? AND secret_question = ? AND secret_question_answer = ?", [user_id, secret_question, secret_question_answer], function (result)
+        database.executeQuery("SELECT * FROM user WHERE user_id = ? AND secret_question = ? AND secret_question_answer = ?", [user_id, secret_question, secret_question_answer], function (result)
         {
             if (result.length == 0)
             {
@@ -99,7 +101,7 @@ User.init = function(server)
             }
         });
 
-        Database.executeQuery("UPDATE user SET password = ? WHERE user_id = ?", [password, user_id], function (result)
+        database.executeQuery("UPDATE user SET password = ? WHERE user_id = ?", [password, user_id], function (result)
         {
           res.send("The password for the user has been successfully reset")
         });
@@ -129,7 +131,7 @@ User.init = function(server)
             res.send(422, "Missing fields")
         }
        
-        Database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number, security_question, security_question_answer], function (result)
+        database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number, security_question, security_question_answer], function (result)
         {           
             if (error)
             {
@@ -143,10 +145,7 @@ User.init = function(server)
     });
 };
 
-module.exports = function (server)
+module.exports = function (server, database)
 {
-    return User.init(server);
+    return User.init(server, database);
 }
-
-
-

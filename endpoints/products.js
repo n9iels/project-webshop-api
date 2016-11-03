@@ -1,13 +1,14 @@
-var Authenticate   = require('../helpers/authenticate');
-var DatabaseHelper = require('../helpers/database');
-var Database       = new DatabaseHelper();
-var Products       = {};
+/**
+ * Products endpoint related to products activities
+ */
+var Products = {};
 
 /**
  * Products Contructor
  *
  * @method init
- * @param {Object} server  Restify Server Object
+ * @param {Object} server    Restify Server Object
+ * @param {Object} database  Database object
  *
  * @return {void}
  */
@@ -23,7 +24,7 @@ var Products       = {};
  * VOORBEELD QUERY 2: http://localhost:8080/products
  * http://localhost:8080/products/filter?platform=PS4
  */
-Products.init = function(server)
+Products.init = function(server, database)
 {
     // Endpoint for '/products/filter' to receive filtered products from the database
     server.get('products', function (req, res, next)
@@ -53,20 +54,20 @@ Products.init = function(server)
         
         if (ean_number != null && ean_number != "") { base_sql += "AND ean_number = " + ean_number + " "; }
 
-        if (platform != null && platform != "") { base_sql += "AND platform = '" + platform + "' "; }
-        if (release_date != null && release_date != "") { base_sql += "AND release_date = '" + release_date + "' "; }
-        if (pegi_age != null && pegi_age != "") { base_sql += "AND pegi_age = '" + pegi_age + "' "; }
-        if (stock != null && stock != "") { base_sql += "AND stock = '" + stock + "' "; }
-        if (price1 != null && price2 != null && price1 != "" && price2 != "") { base_sql += "AND price BETWEEN " + price1 + " AND " + price2 + " "; }
+        if (platform != null && platform != "") { base_sql += "AND platform = " + database.escape(platform) + " "; }
+        if (release_date != null && release_date != "") { base_sql += "AND release_date = " + database.escape(release_date) + " "; }
+        if (pegi_age != null && pegi_age != "") { base_sql += "AND pegi_age = " + database.escape(pegi_age) + " "; }
+        if (stock != null && stock != "") { base_sql += "AND stock = " + database.escape(stock) + " "; }
+        if (price1 != null && price2 != null && price1 != "" && price2 != "") { database.escape(base_sql) += "AND price BETWEEN " + database.escape(price1) + " AND " + database.escape(price2) + " "; }
 
-        if (publisher != null && publisher != "") { base_sql += "AND publisher = '" + publisher + "' "; }
-        if (title != null && title != "") { base_sql += "AND title = '" + title + "' "; }
-        if (subtitle != null && subtitle != "") { base_sql += "AND subtitle = '" + subtitle + "' "; }
-        if (genre != null && genre != "") { base_sql += "AND genre = '" + genre + "' "; }
-        if (franchise != null && franchise != "") { base_sql += "AND franchise = '" + franchise + "' "; }
-        if (description != null && description != "") { base_sql += "AND description = '" + description + "' "; }
+        if (publisher != null && publisher != "") { base_sql += "AND publisher = " + database.escape(publisher) + " "; }
+        if (title != null && title != "") { base_sql += "AND title = " + database.escape(title) + " "; }
+        if (subtitle != null && subtitle != "") { base_sql += "AND subtitle = " + database.escape(subtitle) + " "; }
+        if (genre != null && genre != "") { base_sql += "AND genre = " + database.escape(genre) + " "; }
+        if (franchise != null && franchise != "") { base_sql += "AND franchise = " + database.escape(franchise) + " "; }
+        if (description != null && description != "") { base_sql += "AND description = " + database.escape(description) + " "; }
 
-        Database.executeQuery(base_sql, [], function (result)
+        database.executeQuery(base_sql, [], function (result)
           {
             if (result) {
                 return res.send(result);
@@ -82,7 +83,7 @@ Products.init = function(server)
     {
         var query = req.query;
 
-        Database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.ean_number = ? AND g.pi_id = pii.pi_id", [req.params.ean_number], function (result)
+        database.executeQuery("SELECT * FROM game g, platform_independent_info pii WHERE g.ean_number = ? AND g.pi_id = pii.pi_id", [req.params.ean_number], function (result)
         {
             if (result.length > 0)
             {
@@ -96,12 +97,7 @@ Products.init = function(server)
     });
 };
 
-module.exports = function (server)
+module.exports = function (server, database)
 {
-    return Products.init(server);
+    return Products.init(server, database);
 }
-
-
-
-
-
