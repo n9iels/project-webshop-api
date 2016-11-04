@@ -29,52 +29,32 @@ Products.init = function(server, database)
     // Endpoint for '/products/filter' to receive filtered products from the database
     server.get('products', function (req, res, next)
     {
+        var base_sql = "SELECT * FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1";
         var query = req.query;
 
-        var ean_number = query.ean_number; // game ean_number
+        for (var i in query)
+        {
+            if (i=="price")
+            {
+                var splittedprice = database.escape(query[i]).split(",")
 
-        var platform = query.platform;     // game platform
-        var release_date = query.release_date;     // game release date
-        var pegi_age = query.pegi_age;     // game pegi age
-        var stock = query.stock;     // game stock
-        var price1 = query.price1;        // game price 1
-        var price2 = query.price2;        // game price 2
+                base_sql += " AND " + i + " BETWEEN " + splittedprice[0] + " AND " + splittedprice[1];
+            }
+            else
+            {
+                base_sql += " AND " + i + " IN(" + database.escape(query[i]) + ")"
+            }
+        }
 
-        var g_pi_id = query.g_pi_id;     // game platform independent id
-        var pi_pi_id = query.pi_pi_id;     // platform independent id
-
-        var publisher = query.publisher;     // platform independent info publisher
-        var title = query.title;     // platform independent info title
-        var subtitle = query.subtitle;     // platform independent info subtitle
-        var genre = query.genre;     // platform independent info genre
-        var franchise = query.franchise;     // platform independent info franchise
-        var description = query.description;     // platform independent info description
-
-        var base_sql = "SELECT * FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1 ";
-        
-        if (ean_number != null && ean_number != "") { base_sql += "AND ean_number = " + database.escape(ean_number); }
-
-        if (platform != null && platform != "") { base_sql += "AND platform = " + database.escape(platform); }
-        if (release_date != null && release_date != "") { base_sql += "AND release_date = " + database.escape(release_date); }
-        if (pegi_age != null && pegi_age != "") { base_sql += "AND pegi_age = " + database.escape(pegi_age); }
-        if (stock != null && stock != "") { base_sql += "AND stock = " + database.escape(stock); }
-        if (price1 != null && price2 != null && price1 != "" && price2 != "") { database.escape(base_sql) += "AND price BETWEEN " + database.escape(price1) + " AND " + database.escape(price2); }
-
-        if (publisher != null && publisher != "") { base_sql += "AND publisher = " + database.escape(publisher); }
-        if (title != null && title != "") { base_sql += "AND title = " + database.escape(title); }
-        if (subtitle != null && subtitle != "") { base_sql += "AND subtitle = " + database.escape(subtitle); }
-        if (genre != null && genre != "") { base_sql += "AND genre = " + database.escape(genre); }
-        if (franchise != null && franchise != "") { base_sql += "AND franchise = " + database.escape(franchise); }
-        if (description != null && description != "") { base_sql += "AND description = " + database.escape(description); }
-
-        database.executeQuery(base_sql, [], function (result)
-          {
-            if (result) {
+        database.executeQuery(base_sql, [], function (result, error)
+        {
+            if (result && error == null) {
                 return res.send(result);
             }
 
             return res.send({message:"No results!"})
           });
+
         next();
     });
     
