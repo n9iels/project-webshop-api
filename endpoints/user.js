@@ -131,7 +131,7 @@ User.init = function(server, database)
             res.send(422, "Missing fields")
         }
        
-        database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number, security_question, security_question_answer], function (result)
+        database.executeQuery("INSERT INTO user (email, password, first_name, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer], function (result)
         {           
             if (error)
             {
