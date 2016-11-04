@@ -45,9 +45,17 @@ Database.prototype.executeQuery = function (sql, params, callback)
     });
 }
 
-Database.prototype.escape = function (string)
+/**
+ * Escape a value to use it in SQL
+ * 
+ * @method escape
+ * @param {string}  value  Value to escape
+ * 
+ * @return {string}
+ */
+Database.prototype.escape = function (value)
 {
-    return this._pool.escape(string);
+    return this._pool.escape(value);
 }
 
 module.exports = Database;
