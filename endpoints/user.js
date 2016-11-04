@@ -124,7 +124,7 @@ User.init = function(server, database)
             var date_of_birth = post.date_of_birth;
             var phone_number = post.phone_number;
             var secret_question = post.secret_question;
-            var secret_question_answer = post.secret_answer;
+            var secret_question_answer = post.secret_question_answer;
         }
         catch (err)
         {
