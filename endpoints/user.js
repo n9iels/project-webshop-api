@@ -123,8 +123,8 @@ User.init = function(server, database)
             var gender = post.gender;
             var date_of_birth = post.date_of_birth;
             var phone_number = post.phone_number;
-            var secret_question = post.secret_question;
-            var secret_question_answer = post.secret_question_answer;
+            var secret_question = post.security_question;
+            var secret_question_answer = post.security_answer;
         }
         catch (err)
         {
