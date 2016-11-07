@@ -101,7 +101,7 @@ User.init = function(server, database)
             res.send(422, "Missing fields")
         }
         
-        database.executeQuery("SELECT * FROM user WHERE user_id = ? AND secret_question = ? AND secret_question_answer = ?", [user_id, secret_question, secret_question_answer], function (result)
+        database.executeQuery("SELECT * FROM user WHERE user_id = ? AND email = ? AND secret_question = ? AND secret_question_answer = ?", [user_id, email, secret_question, secret_question_answer], function (result)
         {
             if (result.length == 0)
             {
