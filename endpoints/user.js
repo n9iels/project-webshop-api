@@ -84,14 +84,22 @@ User.init = function(server, database)
     // Endpoint for '/resetpassword' to reset a password for a user
     server.post('user/resetpassword', function (req, res, next)
     {
-        // JSON.parse moet weg
-        var post = req.body;
+        try
+        {
+            var post = req.body;
 
-        // Get user id and current password
-        var user_id = post.user_id; 
-        var password = post.password;
-        var secret_question = post.secret_question;
-        var secret_question_answer = post.secret_question_answer;
+            // Get user id, new password, repeated password, email, secret question and the answer to the secret question
+            var user_id = post.user_id; 
+            var new_password = post.new_password;
+            var repeat_password = post.repeat_password;
+            var e_mail = post.e_mail;
+            var secret_question = post.secret_question;
+            var secret_question_answer = post.secret_question_answer;
+        }
+        catch (err)
+        {
+            res.send(422, "Missing fields")
+        }
         
         database.executeQuery("SELECT * FROM user WHERE user_id = ? AND secret_question = ? AND secret_question_answer = ?", [user_id, secret_question, secret_question_answer], function (result)
         {
@@ -101,7 +109,7 @@ User.init = function(server, database)
             }
         });
 
-        database.executeQuery("UPDATE user SET password = ? WHERE user_id = ?", [password, user_id], function (result)
+        database.executeQuery("UPDATE user SET password = ? WHERE user_id = ?", [new_password, user_id], function (result)
         {
           res.send("The password for the user has been successfully reset")
         });
