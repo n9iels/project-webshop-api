@@ -20,7 +20,7 @@ var Products = {};
  * STEP 4: Voer node index.js in als commando (of druk pijl omhoog om meest recente commando te krijgen en voer deze uit)
  * STEP 5: Ga naar Chrome browser en voer localhost:8080/(naam van endpoint) (BIJVOORBEELD localhost:8080/products)
  * 
- * VOORBEELD QUERY: http://localhost:8080/products?genre=actie&price=50-90&name=battlefield
+ * VOORBEELD QUERY: http://localhost:8080/products?genre=actie&price-min=50&price-max=90&name=battlefield
  * VOORBEELD QUERY 2: http://localhost:8080/products
  * http://localhost:8080/products/filter?platform=PS4
  */
@@ -46,6 +46,16 @@ Products.init = function(server, database)
             {
                 base_sql += " AND " + i + " IN(" + database.escape(query[i]) + ")"
             }
+        }
+
+        for (var i in query){
+            if (i in genre){
+                break;
+            }
+            else if (i=="genre"){
+                base_sql += " AND genre = " + database.escape(query[i]);
+            }
+
         }
 
         database.executeQuery(base_sql, [], function (result, error)
