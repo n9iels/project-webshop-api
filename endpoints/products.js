@@ -34,11 +34,13 @@ Products.init = function(server, database)
 
         for (var i in query)
         {
-            if (i=="price")
+            if (i=="price-min")
             {
-                var splittedprice = database.escape(query[i]).split(",")
-
-                base_sql += " AND " + i + " BETWEEN " + splittedprice[0] + " AND " + splittedprice[1];
+                base_sql += " AND price > " + database.escape(query[i]);
+            }
+            else if(i == "price-max")
+            {
+                base_sql += " AND price < " + database.escape(query[i]);
             }
             else
             {
