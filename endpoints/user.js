@@ -105,15 +105,29 @@ User.init = function(server, database)
             //console.log(e_mail, secret_question, secret_question_answer)
             if (error)
             {
-                res.send(422, "There are missing fields or the email allready exists")
+                res.send(422, "There are missing fields or the email already exists")
             }
+
+            /*
+            console.log(result)
+
+            if (result.length > 0)
+            {
+                res.send(result)
+            }
+
+            else
+            {
+                res.send(422, "Values for email, secret_question and secret_question_answer do not match anywhere in the user table")
+            }*/
+
         });
 
-        database.executeQuery("UPDATE user SET password = ? WHERE email = ?", [new_password, e_mail], function (result)
+        database.executeQuery("UPDATE user SET password = ? WHERE email = ?", [new_password, e_mail], function (result, error)
         {
             if (error)
             {
-                res.send(422, "There are missing fields or the email allready exists")
+                res.send(422, "There are missing fields or the email already exists")
             }
 
             res.send("The password for the user has been successfully reset")
@@ -183,6 +197,49 @@ module.exports = function (server, database)
 {
     return User.init(server, database);
 }
+
+/*
+// Endpoint for '/resetpassword' to reset a password for a user
+    server.post('user/resetpassword', function (req, res, next)
+    {
+        try
+        {
+            var post = JSON.parse(req.body);
+
+            // Get user id, new password, repeated password, email, secret question and the answer to the secret question
+            var new_password = post.new_password;
+            var repeat_password = post.repeat_password;
+            var e_mail = post.email;
+            var secret_question = post.secret_question;
+            var secret_question_answer = post.secret_question_answer;
+        }
+        catch (err)
+        {
+            res.send(422, "Missing fields")
+        }
+        
+        database.executeQuery("SELECT * FROM user WHERE email = ? AND secret_question = ? AND secret_question_answer = ?", [e_mail, secret_question, secret_question_answer], function (result, error)
+        {
+            //console.log(e_mail, secret_question, secret_question_answer)
+            if (error)
+            {
+                res.send(422, "There are missing fields or the email already exists")
+            }
+        });
+
+        database.executeQuery("UPDATE user SET password = ? WHERE email = ?", [new_password, e_mail], function (result, error)
+        {
+            if (error)
+            {
+                res.send(422, "There are missing fields or the email already exists")
+            }
+
+            res.send("The password for the user has been successfully reset")
+        });
+
+        next();
+    });
+*/
 
 
 
