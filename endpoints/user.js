@@ -102,10 +102,9 @@ User.init = function(server, database)
         
         database.executeQuery("SELECT * FROM user WHERE email = ? AND secret_question = ? AND secret_question_answer = ?", [e_mail, secret_question, secret_question_answer], function (result, error)
         {
-            //console.log(e_mail, secret_question, secret_question_answer)
-            if (error)
+            if (error || result.length == 0)
             {
-                res.send(422, "There are missing fields or the email allready exists")
+                res.send(422, "The e-mailaddress does not exist or the secret question is incorrect")
             }
         });
 
@@ -113,7 +112,7 @@ User.init = function(server, database)
         {
             if (error)
             {
-                res.send(422, "There are missing fields or the email allready exists")
+                res.send(422, "something went wrong when resetting the password")
             }
 
             res.send("The password for the user has been successfully reset")
