@@ -109,7 +109,7 @@ User.init = function(server, database)
             }
         });
 
-        database.executeQuery("UPDATE user SET password = ? WHERE email = ?", [new_password, e_mail], function (result)
+        database.executeQuery("UPDATE user SET password = ? WHERE email = ?", [new_password, e_mail], function (result, error)
         {
             if (error)
             {
