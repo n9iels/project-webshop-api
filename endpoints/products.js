@@ -34,28 +34,19 @@ Products.init = function(server, database)
 
         for (var i in query)
         {
-            if (i=="price-min")
+            console.log("")
+            if (i == "price-min" && query[i].length != 0)
             {
-                base_sql += " AND price > " + database.escape(query[i]);
+                base_sql += " AND price >= " + database.escape(query[i]);
             }
-            else if(i == "price-max")
+            else if(i == "price-max" && query[i].length != 0)
             {
-                base_sql += " AND price < " + database.escape(query[i]);
+                base_sql += " AND price <= " + database.escape(query[i]);
             }
-            else
+            else if (i.length && query[i].length != 0)
             {
                 base_sql += " AND " + i + " IN(" + database.escape(query[i]) + ")"
             }
-        }
-
-        for (var i in query){
-            if (i in genre){
-                break;
-            }
-            else if (i=="genre"){
-                base_sql += " AND genre = " + database.escape(query[i]);
-            }
-
         }
 
         database.executeQuery(base_sql, [], function (result, error)
