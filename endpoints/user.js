@@ -176,6 +176,33 @@ User.init = function(server, database)
 
         next();
     });
+
+    // Endpoint for '/admin' to get info of users
+    server.post('users/admin', function (req, res, next)
+    {
+
+
+        next();
+    });
+
+    // Endpoint for '/users' to get user id's
+    server.get('users', Authenticate.admin, function (req, res, next)
+    {
+        // If the post data is correctly set we can check the credentials
+        database.executeQuery("SELECT first_name, insertion, surname, email, phone_number, user_type FROM user", function (result)
+        {
+            if (result.length > 0)
+            {
+                res.send(result);
+            }
+            else
+            {
+                res.send(401, "Bad credentials")
+            }
+        });
+    });
+
+
 };
 
 module.exports = function (server, database)
