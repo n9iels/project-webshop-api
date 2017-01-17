@@ -1,6 +1,7 @@
 // Import modules
 var DatabaseHelper = require('./helpers/database');
 var restify        = require('restify');
+var base64url    = require('base64url');
 
 // Create database connection
 var Database = new DatabaseHelper();
@@ -20,6 +21,7 @@ server.use(restify.bodyParser());
 // Include endpoints
 var products = require('./endpoints/products')(server, Database);
 var user     = require('./endpoints/user')(server, Database);
+var order    = require('./endpoints/order')(server, Database);
 
 // Start server and listen to port 8081
 server.listen(8081, function() {
