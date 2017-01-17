@@ -155,7 +155,7 @@ User.init = function(server, database)
         {           
             if (error)
             {
-                res.send(422, "There are missing fields or the email allready exists")
+                res.send(422, "There are missing fields or the email already exists")
             }
             
             //res.send("Your user information has been stored in the database")
@@ -173,6 +173,21 @@ User.init = function(server, database)
             res.send("You have been successfully registered :p")
         });
         console.log("second query done.");
+
+        // QUERY FOR CREATING EMPTY WISHLIST FOR NEW REGISTERED USER
+        /*
+        database.executeQuery("INSERT INTO wishlist (wishlist_id, is_public, user_id) VALUES (SELECT user_id FROM user WHERE email = ?,?,(SELECT user_id FROM user WHERE email = ?))", [e_mail, WATHIERINTEVULLEN???, e_mail], function (result, error) 
+        {
+            //console.log(wishlist_id, is_public, user_id)
+            if (error)
+            {
+                res.send(422, "There are missing fields or empty wishlist for current registered user already exists")
+            }
+
+            res.send("Empty wishlist for current registered user has been created")
+        });
+        console.log("third query done.");
+        */
 
         next();
     });
