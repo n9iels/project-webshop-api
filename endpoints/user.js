@@ -37,11 +37,11 @@ User.init = function(server, database)
     // Endpoint for '/login' to generate a login token
     server.get('user/login', function (req, res, next)
     {
-        Authenticate.authenticate(req.authorization, 'customer', function(success, token)
+        Authenticate.authenticate(req.authorization, 'customer', function(success, token, user)
         {
             if (success)
             {
-                res.send({access_token:token})
+                res.send({access_token:token, user_id:user[0].user_id})
             }
             else
             {
