@@ -39,7 +39,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-        Database.executeQuery("SELECT * FROM user WHERE username = ? AND password = password", [username, password], function (rows)
+        Database.executeQuery("SELECT * FROM user WHERE email = ? AND password = password", [username, password], function (rows)
         {
             if (rows.length > 0)
             {
