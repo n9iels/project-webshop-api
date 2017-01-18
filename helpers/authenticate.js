@@ -49,7 +49,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
                     {
                         Authenticate.generateToken(result, function (accesstoken, user)
                         {
-                            callback(true, accesstoken);
+                            callback(true, accesstoken, user);
                         });
                     }
                     else
@@ -144,7 +144,7 @@ Authenticate.generateToken = function(user, callback)
     }
 
     jwt.sign({iss:user[0].user_id, usertype:usertype}, function (token) {
-        callback(token);
+        callback(token, user);
     });
 }
 
