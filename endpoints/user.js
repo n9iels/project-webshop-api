@@ -18,8 +18,10 @@ User.init = function(server, database)
     // Endpoint for '/user' to receive all products in the database
     server.get('user', Authenticate.customer, function (req, res, next)
     {
+        var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
+
         // If the post data is correctly set we can check the credentials
-        database.executeQuery("SELECT * FROM user JOIN session ON user.user_id = session.user_id WHERE session.access_token = ?", [req.authorization.credentials], function (result)
+        database.executeQuery("SELECT * FROM user WHERE user_id = ?", [user_id], function (result)
         {
             if (result.length > 0)
             {
@@ -33,36 +35,22 @@ User.init = function(server, database)
     });
 
     // Endpoint for '/login' to generate a login token
-    server.post('user/login', function (req, res, next)
+    server.get('user/login', function (req, res, next)
     {
-        // Get email and password
-        try
+        Authenticate.authenticate(req.authorization, 'customer', function(success, result)
         {
-            var post     = JSON.parse(req.body);
-            var email    = post.email;
-            var password = post.password;
-        }
-        catch (err)
-        {
-            res.send(401, "Bad credentials")
-        }
-        
-        // If the post data is correctly set we can check the credentials
-        database.executeQuery("SELECT * FROM user WHERE email = ? AND password = ?", [email, password], function (result)
-        {
-            if (result.length > 0)
+            if (success)
             {
-                Authenticate.generateToken(result[0], function (accessToken) {
-                    res.send({access_token:accessToken, user_id:result[0].user_id});
+                Authenticate.generateToken(result[0], function (token)
+                {
+                    res.send({access_token:token})
                 });
             }
             else
             {
-                res.send(401, "Bad credentials")
+                res.send(403, "Login not successfull")
             }
-        });
-
-        next();
+        })
     });
 
     // Endpoint for '/logout' to delete a login token

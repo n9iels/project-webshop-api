@@ -1,7 +1,6 @@
 // Import modules
 var DatabaseHelper = require('./helpers/database');
 var restify        = require('restify');
-var base64url    = require('base64url');
 
 // Create database connection
 var Database = new DatabaseHelper();
