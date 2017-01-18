@@ -18,7 +18,7 @@ function JwtHelper(cryptolib, base64url)
     this.sign = function(payload, callback)
     {
         var header    = {alg:"HS256",typ:"JWT"};
-        var payload   = Object.assign(payload, {exp: new Date().getTime()});
+        var payload   = Object.assign(payload, {exp: Math.floor(Date.now() / 1000) + (60 * 60)});
         var signature = this.createSignature(JSON.stringify(header) + JSON.stringify(payload));
         
         callback(this.urlEncode(JSON.stringify(header)) + "." + this.urlEncode(JSON.stringify(payload)) + "." + this.urlEncode(JSON.stringify(signature)));
