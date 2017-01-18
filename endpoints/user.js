@@ -74,7 +74,7 @@ User.init = function(server, database)
             var post = JSON.parse(req.body);
 
             // Get user id, new password, repeated password, email, secret question and the answer to the secret question
-            var new_password = post.new_password;
+            var new_password = Authenticate.hash(post.new_password);
             var repeat_password = post.repeat_password;
             var e_mail = post.email;
             var secret_question = post.secret_question;
