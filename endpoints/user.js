@@ -175,8 +175,7 @@ User.init = function(server, database)
         console.log("second query done.");
 
         // QUERY FOR CREATING EMPTY WISHLIST FOR NEW REGISTERED USER
-        /*
-        database.executeQuery("INSERT INTO wishlist (wishlist_id, is_public, user_id) VALUES (SELECT user_id FROM user WHERE email = ?,?,(SELECT user_id FROM user WHERE email = ?))", [e_mail, WATHIERINTEVULLEN???, e_mail], function (result, error) 
+        database.executeQuery("INSERT INTO wishlist (is_public, user_id) VALUES (?, (SELECT user_id FROM user WHERE email = ?))", [0, e_mail], function (result, error) 
         {
             //console.log(wishlist_id, is_public, user_id)
             if (error)
@@ -187,7 +186,6 @@ User.init = function(server, database)
             res.send("Empty wishlist for current registered user has been created")
         });
         console.log("third query done.");
-        */
 
         next();
     });
