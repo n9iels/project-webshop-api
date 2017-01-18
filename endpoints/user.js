@@ -158,37 +158,30 @@ User.init = function(server, database)
             {
                 res.send(422, "There are missing fields or the email already exists")
             }
-            console.log(result.insertId);
-            //res.send("Your user information has been stored in the database")
-        });
-        console.log("first query done.");
-
-        // Second query successfully works :) :)
-        database.executeQuery("INSERT INTO address (postal_code, house_number, user_id, street, city) VALUES (?,?,(SELECT user_id FROM user WHERE email = ?),?,?)", [postal_code, house_number, e_mail, street_name, city], function (result, error) // Query doesn't insert anything at all
-        {
-            //console.log(postal_code, house_number, e_mail, street_name, city)
-            if (error)
+            else
             {
-                res.send(422, "There are missing fields")
-            }
-           
-            res.send("You have been successfully registered :p")
-        });
-        console.log("second query done.");
+                var userid = result.insertId;
+                console.log("user id last inserted = " + userid);
 
-        // QUERY FOR CREATING EMPTY WISHLIST FOR NEW REGISTERED USER
-        // Third query DOES NOT WORK YET
-        database.executeQuery("INSERT INTO wishlist (is_public, user_id) VALUES (?, (SELECT user_id FROM user WHERE email = ?))", [0, e_mail], function (error, results, fields) 
-        {
-            //console.log(wishlist_id, is_public, user_id)
-            if (error)
-            {
-                res.send(422, "There are missing fields or empty wishlist for current registered user already exists")
-            }
+                database.executeQuery("INSERT INTO wishlist (is_public, user_id) VALUES (?, ?)", [0, userid], function (result, error) 
+                {
+                    //console.log(wishlist_id, is_public, user_id)
+                    if (error)
+                    {
+                        res.send(422, "There are missing fields or empty wishlist for current registered user already exists")
+                    }
+                });
 
-            res.send("Empty wishlist for current registered user has been created")
+                database.executeQuery("INSERT INTO address (postal_code, house_number, user_id, street, city) VALUES (?,?,?,?,?)", [postal_code, house_number, userid, street_name, city], function (result, error) // Query doesn't insert anything at all
+                {
+                    //console.log(postal_code, house_number, e_mail, street_name, city)
+                    if (error)
+                    {
+                        res.send(422, "There are missing fields")
+                    }
+                });
+            }
         });
-        console.log("third query done.");
 
         next();
     });
