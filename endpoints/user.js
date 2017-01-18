@@ -37,14 +37,11 @@ User.init = function(server, database)
     // Endpoint for '/login' to generate a login token
     server.get('user/login', function (req, res, next)
     {
-        Authenticate.authenticate(req.authorization, 'customer', function(success, result)
+        Authenticate.authenticate(req.authorization, 'customer', function(success, token)
         {
             if (success)
             {
-                Authenticate.generateToken(result[0], function (token)
-                {
-                    res.send({access_token:token})
-                });
+                res.send({access_token:token})
             }
             else
             {
@@ -118,7 +115,7 @@ User.init = function(server, database)
 
             // Get e-mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question and secret_question_answer
             var e_mail = post.e_mail;
-            var password = post.password;
+            var password = Authenticate.hash(post.password);
             var first_name = post.first_name;
             var insertion = post.insertion;
             var surname = post.surname;

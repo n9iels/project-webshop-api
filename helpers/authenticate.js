@@ -1,5 +1,6 @@
 var DatabaseHelper = require('../helpers/database');
 var jwt            = require('../helpers/jwt')(require('crypto'), require('base64url'));
+var bcrypt         = require('bcrypt-nodejs');
 var Database       = new DatabaseHelper();
 var Authenticate   = {};
 
@@ -38,18 +39,24 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-        Database.executeQuery("SELECT * FROM user WHERE email = ? AND password = ?", [username, password], function (result, error)
+        Database.executeQuery("SELECT * FROM user WHERE email = ?", [username], function (result, error)
         {
             if (result.length > 0)
             {
-                if (Authenticate.authorize(result[0].user_type, usertype) && result[0].password == password)
+                bcrypt.compare(password, result[0].password, function(err, res)
                 {
-                    return callback(true, result);
-                }
-                else
-                {
-                    callback(false)
-                }
+                    if (res)
+                    {
+                        Authenticate.generateToken(result, function (accesstoken, user)
+                        {
+                            callback(true, accesstoken);
+                        });
+                    }
+                    else
+                    {
+                        callback(false);
+                    }
+                });
             }
             else
             {
@@ -141,6 +148,16 @@ Authenticate.generateToken = function(user, callback)
     });
 }
 
+/**
+ * Hash a password
+ * 
+ * @param {string} string String  to hash
+ */
+Authenticate.hash = function(string)
+{
+    return bcrypt.hashSync(string);
+}
+
 Authenticate.decodeToken = function(token)
 {
     return jwt.decode(token);
@@ -151,5 +168,6 @@ module.exports = {
     admin: Authenticate.admin,
     generateToken: Authenticate.generateToken,
     authenticate: Authenticate.authenticate,
-    decodetoken: Authenticate.decodeToken
+    decodetoken: Authenticate.decodeToken,
+    hash: Authenticate.hash
 };
