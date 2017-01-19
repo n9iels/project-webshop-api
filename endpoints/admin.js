@@ -7,7 +7,7 @@ Admin.init = function(server, database)
     // Endpoint for '/admin' to get info of users 
     server.get('admin/:id', function (req, res, next) //, Authenticate.admin 
     { 
-        database.executeQuery("SELECT * FROM  user WHERE id = ?", [req.params.id], function(result) 
+        database.executeQuery("SELECT * FROM  user WHERE user_id = ?", [req.params.id], function(result) 
         { 
             if (result.length > 0) 
             { 
