@@ -1,5 +1,6 @@
-var DatabaseHelper =  require('../helpers/database');
-var crypto         = require('crypto');
+var DatabaseHelper = require('../helpers/database');
+var jwt            = require('../helpers/jwt')(require('crypto'), require('base64url'));
+var bcrypt         = require('bcrypt-nodejs');
 var Database       = new DatabaseHelper();
 var Authenticate   = {};
 
@@ -17,15 +18,14 @@ Authenticate.authenticate = function(authorization, usertype, callback)
     {
         var access_token = authorization.credentials;
 
-        // Check if the accesstoken is valid
-        Database.executeQuery("SELECT * FROM user JOIN session ON user.user_id = session.user_id WHERE session.access_token = ?", [access_token], function (rows)
+        // Verify access_token
+        jwt.verify(access_token, function(success)
         {
-            if (rows.length > 0)
+            var jwt_usertype = jwt.decode(access_token).payload.usertype;
+
+            if (success && Authenticate.authorize(jwt_usertype, usertype))
             {
-                if (Authenticate.authorize(rows[0], usertype))
-                {
-                    callback(true);
-                }
+                callback(true);
             }
             else
             {
@@ -39,14 +39,24 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-        Database.executeQuery("SELECT * FROM user WHERE email = ? AND password = password", [username, password], function (rows)
+        Database.executeQuery("SELECT * FROM user WHERE email = ?", [username], function (result, error)
         {
-            if (rows.length > 0)
+            if (result.length > 0)
             {
-                if (Authenticate.authorize(rows[0], usertype) && rows[0].password == password)
+                bcrypt.compare(password, result[0].password, function(err, res)
                 {
-                    return callback(true);
-                }
+                    if (res)
+                    {
+                        Authenticate.generateToken(result, function (accesstoken, user)
+                        {
+                            callback(true, accesstoken, user);
+                        });
+                    }
+                    else
+                    {
+                        callback(false);
+                    }
+                });
             }
             else
             {
@@ -64,14 +74,14 @@ Authenticate.authenticate = function(authorization, usertype, callback)
  * Check if a user is authorized
  *
  * @method authorize
- * @param {Object} user      User object
- * @param {string} usertype  Type of the user
+ * @param {Object} usertype      Type of the user
+ * @param {string} typetoverify  Type to verify
  *
  * @return {bool} Returns true if the user is authorized, false otherwise
  */
-Authenticate.authorize = function(user, usertype)
+Authenticate.authorize = function(usertype, typetoverify)
 {
-    if (user.user_type != usertype && user.user_type != "admin")
+    if (usertype != typetoverify && usertype != "admin")
     {
         return false;
     }
@@ -112,8 +122,10 @@ Authenticate.admin = function(req, res, next)
         {
             next();
         }
-
-        res.send(401, {message:"Bad credentials"});
+        else
+        {
+            res.send(401, {message:"Bad credentials"});
+        }
     });
 }
 
@@ -124,15 +136,38 @@ Authenticate.admin = function(req, res, next)
  */
 Authenticate.generateToken = function(user, callback)
 {
-    var accessToken = crypto.randomBytes(48).toString('base64');
-    
-    Database.executeQuery("DELETE FROM session WHERE user_id = ?; INSERT INTO session VALUES (?, ?)", [user.user_id, user.user_id, accessToken], function (result) {
-        callback(accessToken);
+    var usertype = 'customer';
+
+    if (user[0].user_type == 'admin')
+    {
+        usertype = 'admin';
+    }
+
+    jwt.sign({iss:user[0].user_id, usertype:usertype}, function (token) {
+        callback(token, user);
     });
+}
+
+/**
+ * Hash a password
+ * 
+ * @param {string} string String  to hash
+ */
+Authenticate.hash = function(string)
+{
+    return bcrypt.hashSync(string);
+}
+
+Authenticate.decodeToken = function(token)
+{
+    return jwt.decode(token);
 }
 
 module.exports = {
     customer: Authenticate.customer,
     admin: Authenticate.admin,
-    generateToken: Authenticate.generateToken
+    generateToken: Authenticate.generateToken,
+    authenticate: Authenticate.authenticate,
+    decodetoken: Authenticate.decodeToken,
+    hash: Authenticate.hash
 };
