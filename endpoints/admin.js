@@ -5,9 +5,9 @@ var Admin = {}
 Admin.init = function(server, database) 
 { 
     // Endpoint for '/admin' to get info of users 
-    server.get('admin/:email', function (req, res, next) //, Authenticate.admin 
+    server.get('admin/:id', function (req, res, next) //, Authenticate.admin 
     { 
-        database.executeQuery("SELECT * FROM  user WHERE email = ?", [req.params.email], function(result) 
+        database.executeQuery("SELECT * FROM  user WHERE id = ?", [req.params.id], function(result) 
         { 
             if (result.length > 0) 
             { 
@@ -26,7 +26,7 @@ Admin.init = function(server, database)
     server.get('admin', function (req, res, next) //, Authenticate.admin 
     { 
         // If the post data is correctly set we can check the credentials 
-        database.executeQuery("SELECT first_name, insertion, surname, email, phone_number, user_type FROM user", [], function (result) 
+        database.executeQuery("SELECT * FROM user", [], function (result) 
         { 
             if (result.length > 0) 
             { 
