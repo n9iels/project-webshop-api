@@ -1,6 +1,5 @@
 // Require the MySQL and fileWrite module
 var mysql = require('mysql');
-var fs    = require('fs');
 
 /**
  * Database Contructor
@@ -39,7 +38,7 @@ Database.prototype.executeQuery = function (sql, params, callback)
                 console.error('error when execute query: ' + error.message);
             }
 
-            callback(results, error);
+            callback(results, error, fields);
         });
     });
 }
