@@ -5,7 +5,7 @@ var Admin = {}
 Admin.init = function(server, database) 
 { 
     // Endpoint for '/admin' to get info of users 
-    server.get('admin/users/:id', function (req, res, next) //, Authenticate.admin 
+    server.get('admin/users/:id', Authenticate.admin, function (req, res, next) //, Authenticate.admin 
     { 
         database.executeQuery("SELECT * FROM  user WHERE user_id = ?", [req.params.id], function(result) 
         { 
@@ -23,10 +23,12 @@ Admin.init = function(server, database)
     }); 
  
     // Endpoint for '/users' to get user id's 
-    server.get('admin/users', function (req, res, next) //, Authenticate.admin 
-    { 
+    server.get('admin/users', Authenticate.admin, function (req, res, next) //, Authenticate.admin 
+    {
+        var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
+
         // If the post data is correctly set we can check the credentials 
-        database.executeQuery("SELECT * FROM user", [], function (result) 
+        database.executeQuery("SELECT * FROM user WHERE user_id != ?", [user_id], function (result) 
         { 
             if (result.length > 0) 
             { 
@@ -39,7 +41,7 @@ Admin.init = function(server, database)
         }); 
     }); 
 
-    server.patch('admin/users/:id', function(req, res, next)
+    server.patch('admin/users/:id', Authenticate.admin, function(req, res, next)
     {
         database.executeQuery("UPDATE user SET ? WHERE user_id = ?", [req.body, req.params.id], function(result, error)
         {
@@ -53,7 +55,7 @@ Admin.init = function(server, database)
         })
     })
 
-    server.del('admin/users/:id', function(req, res, next)
+    server.del('admin/users/:id', Authenticate.admin, function(req, res, next)
     {
         database.executeQuery("DELETE FROM user WHERE user_id = ?", [req.params.id], function(result, error)
         {
