@@ -5,7 +5,7 @@ var Admin = {}
 Admin.init = function(server, database) 
 { 
     // Endpoint for '/admin' to get info of users 
-    server.get('admin/user/:id', function (req, res, next) //, Authenticate.admin 
+    server.get('admin/users/:id', function (req, res, next) //, Authenticate.admin 
     { 
         database.executeQuery("SELECT * FROM  user WHERE user_id = ?", [req.params.id], function(result) 
         { 
@@ -39,11 +39,33 @@ Admin.init = function(server, database)
         }); 
     }); 
 
-    server.patch('admin/update_user', function(req, res, next)
+    server.patch('admin/users/:id', function(req, res, next)
     {
-        
+        database.executeQuery("UPDATE user SET ? WHERE user_id = ?", [req.body, req.params.id], function(result, error)
+        {
+            if (error) {
+                res.send(500, error);
+            } else if (result.affectedRows == 0) {
+                res.send(404, "user not found");
+            } else {
+                res.send("user updated!");
+            }
+        })
     })
- 
+
+    server.del('admin/users/:id', function(req, res, next)
+    {
+        database.executeQuery("DELETE FROM user WHERE user_id = ?", [req.params.id], function(result, error)
+        {
+            if (error) {
+                res.send(500, error);
+            } else if (result.affectedRows == 0) {
+                res.send(404, "user not found");
+            } else {
+                res.send("user deleted!");
+            }
+        })
+    })
 } 
  
  
