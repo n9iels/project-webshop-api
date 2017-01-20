@@ -25,7 +25,24 @@ Authenticate.authenticate = function(authorization, usertype, callback)
 
             if (success && Authenticate.authorize(jwt_usertype, usertype))
             {
-                callback(true);
+                var user_id = Authenticate.decodeToken(access_token).payload.iss;
+                
+                // Check if the user is not blocked
+                Database.executeQuery("SELECT * FROM `user` WHERE user_id = ? AND is_active = 1", [user_id], function(result, error)
+                {
+                    if (error)
+                    {
+                        callback(false)
+                    }
+                    else if (result.length < 1)
+                    {
+                        callback(false)
+                    }
+                    else
+                    {
+                        callback(true);
+                    }
+                });
             }
             else
             {
@@ -39,7 +56,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
         var password = authorization.basic.password;
 
         // Check if the username and password are valid and create session
-        Database.executeQuery("SELECT * FROM user WHERE email = ?", [username], function (result, error)
+        Database.executeQuery("SELECT * FROM user WHERE email = ? AND is_active = 1", [username], function (result, error)
         {
             if (result.length > 0)
             {
