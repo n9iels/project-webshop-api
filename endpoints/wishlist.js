@@ -44,7 +44,7 @@ Wishlist.init = function(server, database)
         {
             if (error)
             {
-                res.send(500,"Het is niet gelukt om de item toe te voegen aan de Wishlist.")
+                res.send(500,"Toevoegen mislukt.")
             }
             else 
             {
@@ -52,6 +52,29 @@ Wishlist.init = function(server, database)
             }
         });
     });
+
+    server.del('wishlist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
+    {
+        try
+        {
+            var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
+        }
+        catch (err)
+        {
+            res.send(422, "failed to get user_id from token");
+        }
+
+        database.executeQuery("DELETE FROM wishlist_items WHERE wishlist_items.wishlist_id = (SELECT wishlist_id FROM wishlist WHERE user_id = ?) AND wishlist_items.ean_number = ?", [user_id, req.params.ean_number], function(result, error)
+        {
+            if (error) {
+                res.send(500, error);
+            } else if (result.affectedRows == 0) {
+                res.send(404, "Item not found");
+            } else {
+                res.send("Item deleted!");
+            }
+        })
+    })
 };
 
 

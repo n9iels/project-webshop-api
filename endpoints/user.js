@@ -159,13 +159,15 @@ User.init = function(server, database)
         });
         console.log("second query done.");
 
-        next();
-    });
+        database.executeQuery("INSERT INTO wishlist (wishlist_id, is_public, user_id) VALUES ((SELECT user_id FROM user WHERE email = ?), 0, (SELECT user_id FROM user WHERE email = ?));", [e_mail, e_mail], function(result, error)
+        {
+            if (error)
+            {
+                res.send(422, "There are missing fields")
+            }
 
-    // Endpoint for '/admin' to get info of users
-    server.post('users/admin', function (req, res, next)
-    {
-
+            res.send("You have been successfully registered :p")
+        });
 
         next();
     });
