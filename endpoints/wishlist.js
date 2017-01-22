@@ -44,7 +44,15 @@ Wishlist.init = function(server, database)
         {
             if (error)
             {
-                res.send(500,"Toevoegen mislukt.")
+                // Check if we get a DUPLICATED_KEY error
+                if (error.errno == 1062)
+                {
+                    res.send(409, "Duplicated entry");
+                }
+                else
+                {
+                    res.send(500, error);
+                }
             }
             else 
             {
