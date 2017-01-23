@@ -23,6 +23,7 @@ var user     = require('./endpoints/user')(server, Database);
 var wishlist = require('./endpoints/wishlist')(server, Database);
 var order    = require('./endpoints/order')(server, Database);
 var admin    = require('./endpoints/admin')(server, Database);
+var stats    = require('./endpoints/stats')(server, Database);
 
 // Start server and listen to port 8081
 server.listen(8081, function() {
