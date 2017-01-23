@@ -154,18 +154,18 @@ User.init = function(server, database)
             {
                 res.send(422, "There are missing fields")
             }
-
-            res.send("You have been successfully registered :p")
         });
         console.log("second query done.");
 
-        next();
-    });
-
-    // Endpoint for '/admin' to get info of users
-    server.post('users/admin', function (req, res, next)
-    {
-
+        database.executeQuery("INSERT INTO wishlist (wishlist_id, is_public, user_id) VALUES ((SELECT user_id FROM user WHERE email = ?), 0, (SELECT user_id FROM user WHERE email = ?));", [e_mail, e_mail], function(result, error) 
+        { 
+            if (error) 
+            { 
+                res.send(422, "There are missing fields") 
+            } 
+ 
+            res.send("You have been successfully registered :p") 
+        }); 
 
         next();
     });
