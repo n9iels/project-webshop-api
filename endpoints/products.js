@@ -1,3 +1,5 @@
+var Authenticate = require('../helpers/authenticate');
+
 /**
  * Products endpoint related to products activities
  */
@@ -78,6 +80,53 @@ Products.init = function(server, database)
 
         next();
     });
+
+    // Endpoint for '/products' to add new products
+    server.post("products", Authenticate.admin, function(req, res, next)
+    {
+        database.executeQuery("INSERT INTO game SET ?", [req.body], function(result, error)
+        {
+            if (error)
+            {
+                res.send(500, error);
+            }
+            else
+            {
+                res.send("New product add");
+            }
+        })
+    });
+
+    // Endpiont to edit a product
+    server.patch("product/:ean_number", Authenticate.admin, function(req, res, next)
+    {
+        database.executeQuery("UPDATE game WHERE ean_number = ? SET ?", [req.params.ean_number, req.body], function(result, error) 
+        {
+            if (error)
+            {
+                res.send(200, error);
+            }
+            else
+            {
+                res.send("Product updated");
+            }
+        });
+    });
+
+    server.del("product/:ean_number", Authenticate.admin, function(req, res, next)
+    {
+        database.executeQuery("DELETE FROM game WHERE ean_number = ?", [req.params.ean_number], function(result, error)
+        {
+            if (error)
+            {
+                res.send(200, error);
+            }
+            else
+            {
+                res.send("product deleted");
+            }
+        })   
+    })
 };
 
 module.exports = function (server, database)
