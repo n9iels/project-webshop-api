@@ -3,7 +3,7 @@ var Authenticate = require('../helpers/authenticate');
 /**
  * User class to define endpoints related to user activities
  */
-var Wishlist = {};
+var Favoritelist = {};
 
 /**
  * User Contructor
@@ -14,21 +14,21 @@ var Wishlist = {};
  * @return {void}
  */
 
-Wishlist.init = function(server, database)
+Favoritelist.init = function(server, database)
 {
-    server.get('wishlist', Authenticate.customer, function (req, res, next)
+    server.get('favoritelist', Authenticate.customer, function (req, res, next)
     {
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
-        // Select ALL GAMES for CURRENT USER inside his/her WISHLIST (= Letter R in CRUD)
-        database.executeQuery("SELECT * FROM game g, platform_independent_info p, wishlist w, wishlist_items wi, user u WHERE u.user_id = w.user_id AND w.wishlist_id = wi.wishlist_id AND wi.ean_number = g.ean_number AND p.pi_id = g.pi_id AND u.user_id and u.user_id = ?", [user_id], function (result)
+        // Select ALL GAMES for CURRENT USER inside his/her FAVORITE LIST (= Letter R in CRUD)
+        database.executeQuery("", [user_id], function (result)
         {
                 res.send(result);
         })
     }
     );
 
-    server.post('wishlist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
+    server.post('favoritelist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
     {
         try
         {
@@ -39,8 +39,8 @@ Wishlist.init = function(server, database)
             res.send(422, "missing fields..")
         }
 
-        // Add GAME for CURRENT USER inside his/her WISHLIST (= Letter C in CRUD)
-        database.executeQuery("INSERT INTO wishlist_items (wishlist_id, ean_number) VALUES ((SELECT wishlist_id FROM wishlist WHERE user_id = ?), ?)", [user_id, req.params.ean_number], function (result, error)
+        // Add GAME for CURRENT USER inside his/her FAVORITELIST (= Letter C in CRUD)
+        database.executeQuery("", [user_id, req.params.ean_number], function (result, error)
         {
             if (error)
             {
@@ -56,12 +56,12 @@ Wishlist.init = function(server, database)
             }
             else 
             {
-                res.send("Succesvol toegevoegd aan wishlist.")
+                res.send("Succesvol toegevoegd aan favorieten lijst.")
             }
         });
     });
 
-    server.del('wishlist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
+    server.del('favoritelist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
     {
         try
         {
@@ -72,13 +72,13 @@ Wishlist.init = function(server, database)
             res.send(422, "failed to get user_id from token");
         }
 
-        // DELETE GAME for CURRENT USER inside his/her WISHLIST (= Letter D in CRUD)
-        database.executeQuery("DELETE FROM wishlist_items WHERE wishlist_items.wishlist_id = (SELECT wishlist_id FROM wishlist WHERE user_id = ?) AND wishlist_items.ean_number = ?", [user_id, req.params.ean_number], function(result, error)
+        // DELETE GAME for CURRENT USER inside his/her FAVORITELIST (= Letter D in CRUD)
+        database.executeQuery("", [user_id, req.params.ean_number], function(result, error)
         {
             if (error) {
                 res.send(500, error);
             } else if (result.affectedRows == 0) {
-                res.send(404, "item not found");
+                res.send(404, "item not found"); // Error message
             } else {
                 res.send("item deleted!");
             }
@@ -88,5 +88,5 @@ Wishlist.init = function(server, database)
 
 module.exports = function (server, database)
 {
-    return Wishlist.init(server, database);
+    return Favoritelist.init(server, database);
 }
