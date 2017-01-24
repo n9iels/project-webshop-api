@@ -20,6 +20,7 @@ server.use(restify.bodyParser());
 // Include endpoints
 var products = require('./endpoints/products')(server, Database);
 var user     = require('./endpoints/user')(server, Database);
+var wishlist = require('./endpoints/wishlist')(server, Database);
 var order    = require('./endpoints/order')(server, Database);
 var admin    = require('./endpoints/admin')(server, Database);
 

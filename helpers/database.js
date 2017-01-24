@@ -1,6 +1,5 @@
 // Require the MySQL and fileWrite module
 var mysql = require('mysql');
-var fs    = require('fs');
 
 /**
  * Database Contructor
@@ -36,11 +35,10 @@ Database.prototype.executeQuery = function (sql, params, callback)
             connection.release();
             
             if (error) {
-                fs.appendFile("./log/error.log", "Error when execute query '" + sql + "'\n" + error.message + "\n\n");
                 console.error('error when execute query: ' + error.message);
             }
 
-            callback(results, error);
+            callback(results, error, fields);
         });
     });
 }
