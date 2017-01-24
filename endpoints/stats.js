@@ -7,11 +7,6 @@ Stats.init = function(server, database)
     // Endpoint for '/stats' to get info of users 
     server.get('stats', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
-        // var query = "SELECT DISTINCT pii.title, pii.subtitle, g.platform\
-        //              FROM orders_contain_games ocg JOIN `order` o ON ocg.user_id = o.user_id JOIN game g ON ocg.ean_number = g.ean_number JOIN platform_independent_info pii on g.pi_id = pii.pi_id\
-        //              WHERE STATUS !=  'cart'"
-
-
         var query = 
        "SET @prev_value = NULL;\
         SET @rank_count = 0;\
