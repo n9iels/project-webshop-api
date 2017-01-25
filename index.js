@@ -21,6 +21,7 @@ server.use(restify.bodyParser());
 var products = require('./endpoints/products')(server, Database);
 var user     = require('./endpoints/user')(server, Database);
 var order    = require('./endpoints/order')(server, Database);
+var admin    = require('./endpoints/admin')(server, Database);
 
 // Start server and listen to port 8081
 server.listen(8081, function() {
