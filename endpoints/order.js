@@ -12,7 +12,7 @@ Order.init = function(server, database)
     {
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
-        database.executeQuery("SELECT * FROM `order` WHERE user_id = ?", [user_id], function (result, error)
+        database.executeQuery("SELECT * FROM `order` WHERE user_id = ? ORDER BY order_number DESC", [user_id], function (result, error)
         {
             if (error)
             {
