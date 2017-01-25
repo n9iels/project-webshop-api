@@ -82,7 +82,25 @@ Wishlist.init = function(server, database)
                 res.send("item deleted!");
             }
         })
-    })
+    });
+
+    server.patch('wishlist/switch_public', Authenticate.customer, function(req, res, next)
+    {
+        req.body = JSON.parse(req.body);
+        
+        var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
+
+        database.executeQuery("UPDATE wishlist SET is_public = ? WHERE user_id = ?", [req.body.newDBStatus, user_id], function(result, error)
+        {
+            if (error) {
+                res.send(500, error);
+            } else if (result.affectedRows == 0) {
+                res.send(404, "public state nog edited");
+            } else {
+                res.send("public state updated!");
+            }
+        })
+    });
 };
 
 
