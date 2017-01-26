@@ -21,7 +21,7 @@ Favoritelist.init = function(server, database)
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
         // Select ALL GAMES for CURRENT USER inside his/her FAVORITE LIST (= Letter R in CRUD)
-        database.executeQuery("", [user_id], function (result)
+        database.executeQuery("SELECT * FROM favorite_item WHERE user_id = ?;", [user_id], function (result)
         {
                 res.send(result);
         })
@@ -40,7 +40,7 @@ Favoritelist.init = function(server, database)
         }
 
         // Add GAME for CURRENT USER inside his/her FAVORITELIST (= Letter C in CRUD)
-        database.executeQuery("", [user_id, req.params.ean_number], function (result, error)
+        database.executeQuery("INSERT INTO favorite_item (user_id, ean_number) VALUES (?, ?);", [user_id, req.params.ean_number], function (result, error)
         {
             if (error)
             {
@@ -56,7 +56,7 @@ Favoritelist.init = function(server, database)
             }
             else 
             {
-                res.send("Succesvol toegevoegd aan favorieten lijst.")
+                res.send("Succesvol toegevoegd aan uw favorieten lijst.")
             }
         });
     });
@@ -73,7 +73,7 @@ Favoritelist.init = function(server, database)
         }
 
         // DELETE GAME for CURRENT USER inside his/her FAVORITELIST (= Letter D in CRUD)
-        database.executeQuery("", [user_id, req.params.ean_number], function(result, error)
+        database.executeQuery("DELETE FROM favorite_item WHERE user_id = ? AND ean_number` = ?; ", [user_id, req.params.ean_number], function(result, error)
         {
             if (error) {
                 res.send(500, error);
