@@ -43,6 +43,8 @@ Admin.init = function(server, database)
 
     server.patch('admin/users/:id', Authenticate.admin, function(req, res, next)
     {
+        req.body.password = Authenticate.hash(req.body.password);
+        
         database.executeQuery("UPDATE user SET ? WHERE user_id = ?", [req.body, req.params.id], function(result, error)
         {
             if (error) {
