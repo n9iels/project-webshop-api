@@ -107,20 +107,18 @@ Admin.init = function(server, database)
             }
             else
             {
-                res.send("Inserted info into table platform_independent_info");
-            }
-        })
-
-        database.executeQuery("INSERT INTO game(ean_number, platform, release_date, pegi_age, stock, price, image, pi_id) VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT MAX(pi_id) FROM platform_independent_info WHERE title = ?))", 
-        [ean_number, platform, release_date, pegi_age, stock, price, image, title], function(result, error)
-        {
-            if (error)
-            {
-                res.send(500, error)
-            }
-            else
-            {
-                res.send("Inserted info into table game");
+                database.executeQuery("INSERT INTO game(ean_number, platform, release_date, pegi_age, stock, price, image, pi_id) VALUES (?, ?, ?, ?, ?, ?, ?, (SELECT MAX(pi_id) FROM platform_independent_info WHERE title = ?))", 
+                [ean_number, platform, release_date, pegi_age, stock, price, image, title], function(result, error)
+                {
+                    if (error)
+                    {
+                        res.send(500, error)
+                    }
+                    else
+                    {
+                        res.send("Inserted info into table game");
+                    }
+                })
             }
         })
     })
