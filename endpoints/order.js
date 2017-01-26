@@ -46,7 +46,7 @@ Order.init = function(server, database)
             {
                 var order = result[0];
                 
-                database.executeQuery("SELECT * FROM `game` g JOIN `orders_contain_games` ocg ON g.ean_number = ocg.ean_number WHERE ocg.user_id = ? AND ocg.order_number = ?", [user_id, req.params.order_number], function(products, error)
+                database.executeQuery("SELECT * FROM `game` g JOIN `orders_contain_games` ocg ON g.ean_number = ocg.ean_number JOIN `platform_independent_info` pi ON g.pi_id = pi.pi_id WHERE ocg.user_id = ? AND ocg.order_number = ?", [user_id, req.params.order_number], function(products, error)
                 {
                     if (error)
                     {
