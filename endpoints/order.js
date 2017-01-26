@@ -105,7 +105,7 @@ Order.init = function(server, database)
                             // Check if we get a DUPLICATED_KEY error, in that case we can just increase the amount with + 1
                             if (error.errno == 1062)
                             {
-                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [req.body.ean_number, req.params.order_number], function(result, error)
+                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [order_content.ean_number, order_content.order_number], function(result, error)
                                 {
                                     if (error)
                                     {
