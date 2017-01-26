@@ -21,15 +21,29 @@ User.init = function(server, database)
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
         // If the post data is correctly set we can check the credentials
-        database.executeQuery("SELECT * FROM user WHERE user_id = ?", [user_id], function (result)
+        database.executeQuery("SELECT * FROM user WHERE user_id = ?", [user_id], function (result, error)
         {
-            if (result.length > 0)
+            if (error)
             {
-                res.send(result);
+                res.send(500, error)
             }
             else
             {
-                res.send(401, "Bad credentials")
+                var user = result[0];
+
+                database.executeQuery("SELECT * FROM address WHERE user_id = ?", [user_id], function (address, error)
+                {
+                    if (error)
+                    {
+                        res.send(500, error);
+                    }
+                    else
+                    {
+                        user.address = address[0];
+                        
+                        res.send(user)
+                    }
+                })
             }
         });
     });
