@@ -21,9 +21,16 @@ Favoritelist.init = function(server, database)
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
         // Select ALL GAMES for CURRENT USER inside his/her FAVORITE LIST (= Letter R in CRUD)
-        database.executeQuery("SELECT * FROM favorite_item WHERE user_id = ?;", [user_id], function (result)
+        database.executeQuery("SELECT f.ean_number, g.image, pii.title, pii.subtitle, g.price, g.platform, g.stock FROM `favorite_item` f JOIN game g ON f.ean_number = g.ean_number JOIN platform_independent_info pii ON pii.pi_id = g.pi_id WHERE user_id = ?", [user_id], function (result, error)
         {
+            if (error)
+            {
+                res.send(500, error);
+            }
+            else
+            {
                 res.send(result);
+            }
         })
     }
     );
