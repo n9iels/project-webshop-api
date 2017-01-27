@@ -1,5 +1,5 @@
 const assert = require('assert');
-var jwt      = require('../helpers/jwt')(require('crypto'), require('base64url'));
+var jwt      = require('../../helpers/jwt')(require('crypto'), require('base64url'));
 
 describe('JSON Web Token Tests', function()
 {

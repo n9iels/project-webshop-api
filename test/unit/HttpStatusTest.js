@@ -1,5 +1,5 @@
 const assert        = require('assert');
-const restifyClient = require('./helpers/restifyClient')
+const restifyClient = require('../helpers/restifyClient')
 
 describe('HTTP Status code Tests for public endpoints', function()
 {
