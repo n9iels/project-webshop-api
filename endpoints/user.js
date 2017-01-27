@@ -59,7 +59,7 @@ User.init = function(server, database)
             }
             else
             {
-                res.send(403, "Login not successfull")
+                res.send(401, "Login not successfull")
             }
         })
     });
