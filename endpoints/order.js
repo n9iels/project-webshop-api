@@ -46,7 +46,7 @@ Order.init = function(server, database)
             {
                 var order = result[0];
                 
-                database.executeQuery("SELECT * FROM `orders_contain_games` WHERE user_id = ? AND order_number = ?", [user_id, req.params.order_number], function(products, error)
+                database.executeQuery("SELECT * FROM `game` g JOIN `orders_contain_games` ocg ON g.ean_number = ocg.ean_number JOIN `platform_independent_info` pi ON g.pi_id = pi.pi_id WHERE ocg.user_id = ? AND ocg.order_number = ?", [user_id, req.params.order_number], function(products, error)
                 {
                     if (error)
                     {
@@ -105,7 +105,7 @@ Order.init = function(server, database)
                             // Check if we get a DUPLICATED_KEY error, in that case we can just increase the amount with + 1
                             if (error.errno == 1062)
                             {
-                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [req.body.ean_number, req.params.order_number], function(result, error)
+                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [order_content.ean_number, order_content.order_number], function(result, error)
                                 {
                                     if (error)
                                     {
