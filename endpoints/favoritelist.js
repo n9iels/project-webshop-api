@@ -35,7 +35,7 @@ Favoritelist.init = function(server, database)
     }
     );
 
-    server.post('favoritelist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
+    server.post('favoritelist/:ean_number', Authenticate.customer, function(req, res, next)
     {
         try
         {
@@ -68,7 +68,7 @@ Favoritelist.init = function(server, database)
         });
     });
 
-    server.del('favoritelist/:user_id/:ean_number', Authenticate.customer, function(req, res, next)
+    server.del('favoritelist/:ean_number', Authenticate.customer, function(req, res, next)
     {
         try
         {
@@ -80,12 +80,12 @@ Favoritelist.init = function(server, database)
         }
 
         // DELETE GAME for CURRENT USER inside his/her FAVORITELIST (= Letter D in CRUD)
-        database.executeQuery("DELETE FROM favorite_item WHERE user_id = ? AND ean_number` = ?; ", [user_id, req.params.ean_number], function(result, error)
+        database.executeQuery("DELETE FROM favorite_item WHERE user_id = ? AND ean_number = ?", [user_id, req.params.ean_number], function(result, error)
         {
             if (error) {
                 res.send(500, error);
             } else if (result.affectedRows == 0) {
-                res.send(404, "item not found"); // Error message
+                res.send(404, "item not found");
             } else {
                 res.send("item deleted!");
             }
