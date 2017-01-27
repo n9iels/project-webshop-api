@@ -4,7 +4,7 @@
   "description": "API for the webshop",
   "main": "index.js",
   "scripts": {
-    "test": "mocha test/unit mocha test/integration",
+    "test": "mocha test/unit test/integration",
     "start": "node index"
   },
   "repository": {
