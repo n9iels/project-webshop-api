@@ -1,11 +1,10 @@
 const restify      = require('restify');
-const mockDatabase = require('../mocks/database');
 
 function RestifyClient() {
     this.server = "";
 };
 
-RestifyClient.prototype.createClient = function()
+RestifyClient.prototype.createClient = function(database)
 {
     this.server = restify.createServer({
         name: 'AZ Games - Testing server'
@@ -15,11 +14,11 @@ RestifyClient.prototype.createClient = function()
     this.server.use(restify.queryParser());
     this.server.use(restify.bodyParser());
 
-    var products = require('../../endpoints/products')(this.server, mockDatabase);
-    var user     = require('../../endpoints/user')(this.server, mockDatabase);
-    var wishlist = require('../../endpoints/wishlist')(this.server, mockDatabase);
-    var order    = require('../../endpoints/order')(this.server, mockDatabase);
-    var admin    = require('../../endpoints/admin')(this.server, mockDatabase);
+    var products = require('../../endpoints/products')(this.server, database);
+    var user     = require('../../endpoints/user')(this.server, database);
+    var wishlist = require('../../endpoints/wishlist')(this.server, database);
+    var order    = require('../../endpoints/order')(this.server, database);
+    var admin    = require('../../endpoints/admin')(this.server, database);
 
     // Start server and listen to port 8083
     this.server.listen(8083);
