@@ -37,7 +37,8 @@ describe('JSON Web Token Tests', function()
     {
         var jtwToken = "";
 
-        before(function() {
+        before(function()
+        {
             jwt.sign({iss:1}, function(token) {
                 jwtToken = token;
             });
