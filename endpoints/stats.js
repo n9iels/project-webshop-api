@@ -4,8 +4,8 @@ var Stats = {}
  
 Stats.init = function(server, database) 
 {
-    // Endpoint for '/stats' to get info of users 
-    server.get('stats', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
+    // Endpoint for '/stats/topgames' to get games bought by most users
+    server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
         var aantal_copies_query = 
        "SET @prev_value = NULL;\
@@ -47,16 +47,41 @@ Stats.init = function(server, database)
         ) as ranked\
         WHERE ranked.rank <= 10"
 
-        database.executeQuery(aantal_users_query, [], function(result) 
-        { 
-            if (result.length > 0) 
+        var hoogst_aantal_users_qry =
+       "SET @prev_value = NULL;\
+        SET @rank_count = 0;\
+        SELECT * \
+        FROM (\
+            SELECT stock, title, subtitle, user_count, CASE\
+                WHEN @prev_value = user_count THEN @rank_count\
+                WHEN @prev_value := user_count THEN @rank_count := @rank_count + 1\
+                END AS rank\
+            FROM ( \
+        SELECT g.stock, pii.title, pii.subtitle, COUNT(ocg.user_id) as user_count\
+        FROM `order` o\
+        JOIN orders_contain_games ocg ON o.order_number = ocg.order_number\
+        JOIN game g ON g.ean_number = ocg.ean_number\
+        JOIN platform_independent_info pii ON pii.pi_id = g.pi_id\
+        WHERE o.order_date BETWEEN '2017-01-01' AND '2017-01-31'\
+        GROUP BY pii.title\
+        ORDER BY user_count DESC\
+                    ) as nice\
+            ) as ranked\
+        WHERE rank <= 10"
+
+        database.executeQuery(hoogst_aantal_users_qry, [], function(result, error)
+        {
+            if (error)
+            {
+                res.send(500, error)
+            }
+            else if (result.length > 0) 
             { 
-                console.log(result);
                 res.send(result[2]); //without the [2] it sends three objects: two empty ones and the third (result[2]) containing the games
             } 
             else 
             { 
-                res.send(401, "result.length !> 0"); 
+                res.send(404, "result.length !> 0"); 
             } 
         }) 
  
