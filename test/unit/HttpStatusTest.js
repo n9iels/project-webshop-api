@@ -1,11 +1,12 @@
 const assert        = require('assert');
-const restifyClient = require('../helpers/restifyClient')
+const mockDatabase = require('../mocks/database');
+const restifyClient = require('../helpers/restifyClient');
 
 describe('HTTP Status code Tests for public endpoints', function()
 {
     before(function(done)
     {
-        client = restifyClient.createClient();
+        client = restifyClient.createClient(mockDatabase);
         done();
     });
 
@@ -25,7 +26,7 @@ describe('HTTP Status code Tests for public endpoints', function()
     {
         it('should return a HTTP 200', function(done)
         {
-            client.get('/products', function (err, req, res, data)
+            client.get('/products/1', function (err, req, res, data)
             {
                 assert.equal(res.statusCode, 200, 'invalid status code');
                 done();
