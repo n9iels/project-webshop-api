@@ -1,12 +1,13 @@
-const assert        = require('assert');
-const mockDatabase = require('../mocks/database');
-const restifyClient = require('../helpers/restifyClient');
+const assert             = require('assert');
+const mockDatabase       = require('../mocks/database');
+const mockAuthnetication = require('../mocks/authentication');
+const restifyClient      = require('../helpers/restifyClient');
 
 describe('HTTP Status code Tests for public endpoints', function()
 {
     before(function(done)
     {
-        client = restifyClient.createClient(mockDatabase);
+        client = restifyClient.createClient(mockDatabase, mockAuthnetication);
         done();
     });
 
