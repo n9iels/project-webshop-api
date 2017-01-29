@@ -25,7 +25,7 @@ Authenticate.authenticate = function(authorization, usertype, callback)
 
             if (success && Authenticate.authorize(jwt_usertype, usertype))
             {
-                var user_id = Authenticate.decodeToken(access_token).payload.iss;
+                var user_id = Authenticate.decodetoken(access_token).payload.iss;
                 
                 // Check if the user is not blocked
                 Database.executeQuery("SELECT * FROM `user` WHERE user_id = ? AND is_active = 1", [user_id], function(result, error)
@@ -175,7 +175,7 @@ Authenticate.hash = function(string)
     return bcrypt.hashSync(string);
 }
 
-Authenticate.decodeToken = function(token)
+Authenticate.decodetoken = function(token)
 {
     return jwt.decode(token);
 }
@@ -185,6 +185,6 @@ module.exports = {
     admin: Authenticate.admin,
     generateToken: Authenticate.generateToken,
     authenticate: Authenticate.authenticate,
-    decodetoken: Authenticate.decodeToken,
+    decodetoken: Authenticate.decodetoken,
     hash: Authenticate.hash
 };

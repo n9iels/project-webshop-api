@@ -1,5 +1,3 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * User class to define endpoints related to user activities
  */
@@ -13,7 +11,7 @@ var User = {};
  *
  * @return {void}
  */
-User.init = function(server, database)
+User.init = function(server, database, Authenticate)
 {
     // Endpoint for '/user' to receive all products in the database
     server.get('user', Authenticate.customer, function (req, res, next)
@@ -184,7 +182,7 @@ User.init = function(server, database)
     server.get('users', Authenticate.admin, function (req, res, next)
     {
         // If the post data is correctly set we can check the credentials
-        database.executeQuery("SELECT first_name, insertion, surname, email, phone_number, user_type FROM user", function (result)
+        database.executeQuery("SELECT first_name, insertion, surname, email, phone_number, user_type FROM user", [], function (result, error)
         {
             if (result.length > 0)
             {
@@ -200,9 +198,9 @@ User.init = function(server, database)
 
 };
 
-module.exports = function (server, database)
+module.exports = function (server, databaseHelper, authenticateHelper)
 {
-    return User.init(server, database);
+    return User.init(server, databaseHelper, authenticateHelper);
 }
 
 
