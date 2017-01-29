@@ -1,9 +1,8 @@
 // Import modules
-var DatabaseHelper = require('./helpers/database');
-var restify        = require('restify');
-
-// Create database connection
-var Database = new DatabaseHelper();
+var databaseHelper     = new (require('./helpers/database'));
+var jwtHelper          = require('./helpers/jwt')(require('crypto'), require('base64url'));
+var authenticateHelper = require('./helpers/authenticateHelper')(databaseHelper, jwtHelper, require('bcrypt-nodejs'));
+var restify            = require('restify');
 
 // Create server
 var server = restify.createServer({
@@ -18,11 +17,11 @@ server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
 // Include endpoints
-var products = require('./endpoints/products')(server, Database);
-var user     = require('./endpoints/user')(server, Database);
-var wishlist = require('./endpoints/wishlist')(server, Database);
-var order    = require('./endpoints/order')(server, Database);
-var admin    = require('./endpoints/admin')(server, Database);
+var products = require('./endpoints/products')(server, databaseHelper, authenticateHelper);
+var user     = require('./endpoints/user')(server, databaseHelper, authenticateHelper);
+var wishlist = require('./endpoints/wishlist')(server, databaseHelper, authenticateHelper);
+var order    = require('./endpoints/order')(server, databaseHelper, authenticateHelper);
+var admin    = require('./endpoints/admin')(server, databaseHelper, authenticateHelper);
 var favoritelist = require('./endpoints/favoritelist')(server, Database); // HABBO: stuff
 var stats    = require('./endpoints/stats')(server, Database);
 

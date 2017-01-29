@@ -1,5 +1,3 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * User class to define endpoints related to user activities
  */
@@ -13,8 +11,7 @@ var Wishlist = {};
  *
  * @return {void}
  */
-
-Wishlist.init = function(server, database)
+Wishlist.init = function(server, database, Authenticate)
 {
     server.get('wishlist', Authenticate.customer, function (req, res, next)
     {
@@ -86,7 +83,7 @@ Wishlist.init = function(server, database)
     })
 };
 
-module.exports = function (server, database)
+module.exports = function (server, databaseHelper, authenticateHelper)
 {
-    return Wishlist.init(server, database);
+    return Wishlist.init(server, databaseHelper, authenticateHelper);
 }

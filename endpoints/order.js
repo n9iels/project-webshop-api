@@ -1,11 +1,9 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * Order endpoint related to order activities
  */
 var Order = {};
 
-Order.init = function(server, database)
+Order.init = function(server, database, Authenticate)
 {
     // Get all order for the registered user
     server.get("orders", Authenticate.customer, function(req, res, next)
@@ -244,7 +242,7 @@ Order.init = function(server, database)
     });
 }
 
-module.exports = function (server, database)
+module.exports = function (server, databaseHelper, authenticateHelper)
 {
-    return Order.init(server, database);
+    return Order.init(server, databaseHelper, authenticateHelper);
 }
