@@ -62,28 +62,12 @@ User.init = function(server, database, Authenticate)
         })
     });
 
-    // Endpoint for '/logout' to delete a login token
-    server.post('user/logout', function (req, res, next)
-    {
-        var post = JSON.parse(req.body);
-        
-        // Get user id 
-        var user_id = post.user_id;
-        
-        database.executeQuery("DELETE FROM session WHERE user_id = ?", [user_id], function (result)
-        {
-          res.send("Successfully deleted user (R.I.P)")
-        });
-
-        next();
-    });
-
     // Endpoint for '/resetpassword' to reset a password for a user
     server.post('user/resetpassword', function (req, res, next)
     {
         try
         {
-            var post = JSON.parse(req.body);
+            var post = req.body;
 
             // Get user id, new password, repeated password, email, secret question and the answer to the secret question
             var new_password = Authenticate.hash(post.new_password);
@@ -122,8 +106,7 @@ User.init = function(server, database, Authenticate)
     {
         try
         {
-            var post = JSON.parse(req.body);
-            console.log(post);
+            var post = req.body;
 
             // Get e-mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question and secret_question_answer
             var e_mail = post.e_mail;
