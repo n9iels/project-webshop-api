@@ -1,8 +1,7 @@
 // Import modules
 var databaseHelper     = new (require('./helpers/database'));
 var jwtHelper          = require('./helpers/jwt')(require('crypto'), require('base64url'));
-var bcrypt             = require('bcrypt-nodejs');
-var authenticateHelper = require('./helpers/authenticateHelper')(databaseHelper, jwtHelper, bcrypt);
+var authenticateHelper = require('./helpers/authenticateHelper')(databaseHelper, jwtHelper, require('bcrypt-nodejs'));
 var restify            = require('restify');
 
 // Create server
