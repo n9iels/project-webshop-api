@@ -13,9 +13,9 @@ function JwtHelper()
      */
     this.sign = function(payload, callback)
     {
-        var header    = {};
+        var header    = {alg:"HS256",typ:"JWT"};
         var payload   = payload;
-        var signature = {};
+        var signature = "abc";
         
         callback(this.urlEncode(JSON.stringify(header)) + "." + this.urlEncode(JSON.stringify(payload)) + "." + this.urlEncode(JSON.stringify(signature)));
     }

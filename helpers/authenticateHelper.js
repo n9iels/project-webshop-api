@@ -23,9 +23,9 @@ function AuthenticateHelper(database, jwt, bcrypt)
             var access_token = authorization.credentials;
 
             // Verify access_token
-            jwt.verify(access_token, function(success)
+            self.jwt.verify(access_token, function(success)
             {
-                var jwt_usertype = jwt.decode(access_token).payload.usertype;
+                var jwt_usertype = self.jwt.decode(access_token).payload.usertype;
 
                 if (success && self.authorize(jwt_usertype, usertype))
                 {
@@ -164,7 +164,7 @@ function AuthenticateHelper(database, jwt, bcrypt)
             usertype = 'admin';
         }
 
-        jwt.sign({iss:user[0].user_id, usertype:usertype}, function (token) {
+        self.jwt.sign({iss:user[0].user_id, usertype:usertype}, function (token) {
             callback(token, user);
         });
     }
@@ -181,7 +181,7 @@ function AuthenticateHelper(database, jwt, bcrypt)
 
     this.decodetoken = function(token)
     {
-        return jwt.decode(token);
+        return self.jwt.decode(token);
     }
 }
 
