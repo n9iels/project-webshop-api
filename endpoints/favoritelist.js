@@ -1,4 +1,4 @@
-var Authenticate = require('../helpers/authenticate');
+var Authenticate = require('../helpers/authenticateHelper');
 
 /**
  * User class to define endpoints related to user activities
@@ -14,7 +14,7 @@ var Favoritelist = {};
  * @return {void}
  */
 
-Favoritelist.init = function(server, database)
+Favoritelist.init = function(server, database, Authenticate)
 {
     server.get('favoritelist', Authenticate.customer, function (req, res, next)
     {
@@ -93,7 +93,7 @@ Favoritelist.init = function(server, database)
     })
 };
 
-module.exports = function (server, database)
+module.exports = function (server, database, authenticate)
 {
-    return Favoritelist.init(server, database);
+    return Favoritelist.init(server, database, authenticate);
 }
