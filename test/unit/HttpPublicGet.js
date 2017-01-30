@@ -35,6 +35,18 @@ describe('HTTP Status code Tests for public endpoints', function()
         });
     });
 
+    describe('/public_wishlist/:user_id', function()
+    {
+        it('should return a HTTP 200', function(done)
+        {
+            client.get('/public_wishlist/1', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 200, 'invalid status code');
+                done();
+            });
+        });
+    });
+
     after(function(done)
     {
         client.close();

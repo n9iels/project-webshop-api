@@ -95,6 +95,54 @@ describe('HTTP Status code Tests for protected GET endpoints', function()
         });
     });
 
+    describe('/wishlist', function()
+    {
+        it('should return a HTTP 401', function(done)
+        {
+            client.get('/wishlist', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+    });
+
+    describe('/public_wishlist/:user_id', function()
+    {
+        it('should return a HTTP 200', function(done)
+        {
+            client.get('/public_wishlist/1', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 200, 'invalid status code');
+                done();
+            });
+        });
+    });
+
+    describe('/stats/topgames', function()
+    {
+        it('should return a HTTP 401', function(done)
+        {
+            client.get('/stats/topgames', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+    });
+
+    describe('/favoritelist', function()
+    {
+        it('should return a HTTP 401', function(done)
+        {
+            client.get('/favoritelist', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+    });
+
     after(function(done)
     {
         client.close();

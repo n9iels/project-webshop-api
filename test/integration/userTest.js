@@ -12,7 +12,7 @@ describe('Integration tests for user related endpoints', function()
         client = restifyClient.createClient(databaseHelper, authenticateHelper);
 
          // Insert test data for the user table
-        fs.readFile("test/sql/user.sql", "utf-8", function (err, data)
+        fs.readFile("test/sql/schema.sql", "utf-8", function (err, data)
         {
             databaseHelper.executeQuery(data, [], function(result, error)
             {
