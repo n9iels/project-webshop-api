@@ -11,6 +11,18 @@ describe('HTTP Status code Tests for protected POST endpoints', function()
         done();
     });
 
+    describe('/products', function()
+    {
+        it('should return a HTTP 401', function(done)
+        {
+            client.post('/products', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+    });
+
     describe('/orders', function()
     {
         it('should return a HTTP 401', function(done)
