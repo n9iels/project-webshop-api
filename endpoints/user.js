@@ -49,11 +49,15 @@ User.init = function(server, database, Authenticate)
     // Endpoint for '/login' to generate a login token
     server.get('user/login', function (req, res, next)
     {
-        Authenticate.authenticate(req.authorization, 'customer', function(success, token, user)
+        Authenticate.authenticate(req.authorization, 'customer', function(success, token, user, blocked)
         {
             if (success)
             {
                 res.send({access_token:token, user_id:user[0].user_id})
+            }
+            else if (blocked)
+            {
+                res.send(403, "Your blocked!")
             }
             else
             {

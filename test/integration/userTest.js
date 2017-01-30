@@ -61,6 +61,17 @@ describe('Integration tests for user related endpoints', function()
                 done();
             });
         });
+
+        it('should return a HTTP 403 for blocked users', function(done)
+        {
+            client.basicAuth("blocked@blocked.nl", "customer");
+            client.get('/user/login', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 403, 'invalid status code');
+                done();
+            });
+        });
+
     });
 
     describe('/user/login', function()
