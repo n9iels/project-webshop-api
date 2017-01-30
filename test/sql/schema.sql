@@ -69,11 +69,9 @@ CREATE TABLE IF NOT EXISTS `orders_contain_games` (
   `order_number` int(11) NOT NULL,
   `user_id` int(11) DEFAULT NULL,
   `ean_number` bigint(20) NOT NULL,
-  `amount` int(11) NOT NULL,
+  `amount` int(11) NOT NULL DEFAULT '1',
   PRIMARY KEY (`order_number`,`ean_number`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `orders_contain_games_ibfk_1` FOREIGN KEY (`order_number`) REFERENCES `order` (`order_number`) ON DELETE CASCADE,
-  CONSTRAINT `orders_contain_games_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE SET NULL
+  KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* Create game table */
@@ -91,7 +89,8 @@ CREATE TABLE IF NOT EXISTS `game` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `game` (`ean_number`, `platform`, `release_date`, `pegi_age`, `stock`, `price`, `image`, `pi_id`) VALUES
-(45665465, 'PS2', '2002-10-27', 18, 50, 54.99, 'https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg', 1);
+(45665465, 'PS2', '2002-10-27', 18, 50, 54.99, 'https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg', 1),
+(9006113007210, 'PC', '2014-06-20', 7, 445, 36.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/7/0/0/0/9200000027120007.jpg', 2);
 
 /* Create `platform_indipendent_info` table */
 CREATE TABLE IF NOT EXISTS `platform_independent_info` (
@@ -106,4 +105,5 @@ CREATE TABLE IF NOT EXISTS `platform_independent_info` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 INSERT INTO `platform_independent_info` (`pi_id`, `publisher`, `title`, `subtitle`, `genre`, `franchise`, `description`) VALUES
-(1, 'Rockstar', 'Grand Theft Auto: Vice City', 'Vice City', 'Actie', 'Grand Theft Auto', 'Grand Theft Auto - Vice City speelt zich zo''n twintig jaar eerder af dan GRAND THEFT AUTO III en voert je terug naar de tachtiger jaren van de vorige eeuw die de wereld meer geld, meer glamour, meer grote auto''s, maar ook meer drugs, criminaliteit, en decadentie brachten.Maak kennis met Tommy Vercetti, een gangster uit Liberty City die al een behoorlijke tijd meedraait in het misdaadwereldje en die net een gevangenisstraf van 15 jaar heeft uitgezeten. Noodgedwongen heeft Tommy Liberty City achter zich gelaten en is hij uitgeweken naar Vice City waar hij het criminele koninkrijk van de Forelli''s in opdracht van ene Sonny Forelli stevig moet gaan uitbreiden. Hij krijgt hiervoor een flinke som geld tot zijn beschikking die hij echter al tijdens zijn eerste opdracht verliest waardoor hij zich de woede van Sonny Forelli op de hals haalt. Dankzij zijn connecties met de onderwereld weet Tommy zich te redden..Maak in de eerste missie kennis met de advocaat van de Forelli-familie. Hij nodigt je uit op een bootfeestje waar alle hoofdrolspelers van de misdaadwereld van Vice City aanwezig zijn; hier start je nieuwe misdaadcarriere.');
+(1, 'Rockstar', 'Grand Theft Auto: Vice City', 'Vice City', 'Actie', 'Grand Theft Auto', 'Grand Theft Auto - Vice City speelt zich zo''n twintig jaar eerder af dan GRAND THEFT AUTO III en voert je terug naar de tachtiger jaren van de vorige eeuw die de wereld meer geld, meer glamour, meer grote auto''s, maar ook meer drugs, criminaliteit, en decadentie brachten.Maak kennis met Tommy Vercetti, een gangster uit Liberty City die al een behoorlijke tijd meedraait in het misdaadwereldje en die net een gevangenisstraf van 15 jaar heeft uitgezeten. Noodgedwongen heeft Tommy Liberty City achter zich gelaten en is hij uitgeweken naar Vice City waar hij het criminele koninkrijk van de Forelli''s in opdracht van ene Sonny Forelli stevig moet gaan uitbreiden. Hij krijgt hiervoor een flinke som geld tot zijn beschikking die hij echter al tijdens zijn eerste opdracht verliest waardoor hij zich de woede van Sonny Forelli op de hals haalt. Dankzij zijn connecties met de onderwereld weet Tommy zich te redden..Maak in de eerste missie kennis met de advocaat van de Forelli-familie. Hij nodigt je uit op een bootfeestje waar alle hoofdrolspelers van de misdaadwereld van Vice City aanwezig zijn; hier start je nieuwe misdaadcarriere.'),
+(2, 'Nordic Games', 'Planetary Annihilation', NULL, 'Real Time', NULL, '\r\nKoloniseer zonnestelsels, vermorzel hele werelden en vernietig je tegenstanders in epische gevechten met meerdere spelers en duizenden eenheden. Planetary Annihilation tilt real-time strategy naar planetaire hoogten. Bestuur ronkende, krachtige oorlogstanks, enorme bommenwerpers en een arsenaal van onderzeeers, bots, orbitale eenheden en oorlogsschepen. Gebruik hele planeten als basis en stuur je oorlogsmachine naar andere hemellichamen. Speel met maximaal 40 spelers in epische free-for-alls of vecht tegen de AI. Voorzie asteroiden van raketten en laat ze inslaan op planeten van tegenstanders om ze in kraters te veranderen. Winnen is niet genoeg. Alles moet kapot.');
