@@ -79,7 +79,7 @@ function AuthenticateHelper(database, jwt, bcrypt)
                         }
                     });
                 }
-                else if (result[0].is_active == 0)
+                else if (result.length > 0 && result[0].is_active == 0)
                 {
                     // Last parameter means blocked
                     callback(false, null, null, true)
