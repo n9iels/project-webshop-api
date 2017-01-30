@@ -59,6 +59,19 @@ describe('HTTP Status code Tests for protected POST endpoints', function()
         });
     });
 
+    describe('/favoritelist/:ean_number', function()
+    {
+        it('should return a HTTP 401', function(done)
+        {
+            client.post('/favoritelist/1', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+    });
+
+
     after(function(done)
     {
         client.close();
