@@ -64,9 +64,6 @@ Order.init = function(server, database, Authenticate)
     // Create a new order
     server.post("orders", Authenticate.customer, function(req, res, next)
     {
-        // Parse body to JSON
-        req.body = JSON.parse(req.body);
-
         // Append the user_id to the req.body
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
         req.body.user_id = user_id;
