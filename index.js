@@ -23,8 +23,8 @@ var user            = require('./endpoints/user')(server, databaseHelper, authen
 var wishlist        = require('./endpoints/wishlist')(server, databaseHelper, authenticateHelper);
 var order           = require('./endpoints/order')(server, databaseHelper, authenticateHelper);
 var admin           = require('./endpoints/admin')(server, databaseHelper, authenticateHelper);
-var public_wishlist = require('./endpoints/public_wishlist')(server, Database);
-var favoritelist    = require('./endpoints/favoritelist')(server, databaseHelper, authenticateHelper); // HABBO: stuff
+var public_wishlist = require('./endpoints/public_wishlist')(server, databaseHelper, authenticateHelper);
+var favoritelist    = require('./endpoints/favoritelist')(server, databaseHelper, authenticateHelper);
 var stats           = require('./endpoints/stats')(server, databaseHelper, authenticateHelper);
 
 // Start server and listen to port 8081

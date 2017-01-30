@@ -1,5 +1,3 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * User class to define endpoints related to user activities
  */
@@ -14,7 +12,7 @@ var PublicWishlist = {};
  * @return {void}
  */
 
-PublicWishlist.init = function (server, database)
+PublicWishlist.init = function (server, database, Authenticate)
 {
     server.get('public_wishlist/:user_id', function (req, res, next)
     {
@@ -35,7 +33,7 @@ PublicWishlist.init = function (server, database)
     });
 };
 
-module.exports = function (server, database)
+module.exports = function (server, database, authenticate)
 {
-    return PublicWishlist.init(server, database);
+    return PublicWishlist.init(server, database, authenticate);
 }
