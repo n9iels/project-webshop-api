@@ -1,8 +1,8 @@
-var Authenticate = require('../helpers/authenticate');
+var Authenticate = require('../helpers/authenticateHelper');
 
 var Stats = {} 
  
-Stats.init = function(server, database) 
+Stats.init = function(server, database, Authenticate) 
 {
     // Endpoint for '/stats/topgames' to get games bought by most users
     server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
@@ -76,7 +76,7 @@ Stats.init = function(server, database)
     }
 }
 
-module.exports = function (server, database)
+module.exports = function (server, database, Authenticate)
 {
-    return Stats.init(server, database);
+    return Stats.init(server, database, Authenticate);
 }

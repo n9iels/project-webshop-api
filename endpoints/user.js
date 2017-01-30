@@ -1,5 +1,3 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * User class to define endpoints related to user activities
  */
@@ -13,7 +11,7 @@ var User = {};
  *
  * @return {void}
  */
-User.init = function(server, database)
+User.init = function(server, database, Authenticate)
 {
     // Endpoint for '/user' to receive all products in the database
     server.get('user', Authenticate.customer, function (req, res, next)
@@ -64,28 +62,12 @@ User.init = function(server, database)
         })
     });
 
-    // Endpoint for '/logout' to delete a login token
-    server.post('user/logout', function (req, res, next)
-    {
-        var post = JSON.parse(req.body);
-        
-        // Get user id 
-        var user_id = post.user_id;
-        
-        database.executeQuery("DELETE FROM session WHERE user_id = ?", [user_id], function (result)
-        {
-          res.send("Successfully deleted user (R.I.P)")
-        });
-
-        next();
-    });
-
     // Endpoint for '/resetpassword' to reset a password for a user
     server.post('user/resetpassword', function (req, res, next)
     {
         try
         {
-            var post = JSON.parse(req.body);
+            var post = req.body;
 
             // Get user id, new password, repeated password, email, secret question and the answer to the secret question
             var new_password = Authenticate.hash(post.new_password);
@@ -124,8 +106,7 @@ User.init = function(server, database)
     {
         try
         {
-            var post = JSON.parse(req.body);
-            console.log(post);
+            var post = req.body;
 
             // Get e-mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question and secret_question_answer
             var e_mail = post.e_mail;
@@ -184,7 +165,7 @@ User.init = function(server, database)
     server.get('users', Authenticate.admin, function (req, res, next)
     {
         // If the post data is correctly set we can check the credentials
-        database.executeQuery("SELECT first_name, insertion, surname, email, phone_number, user_type FROM user", function (result)
+        database.executeQuery("SELECT first_name, insertion, surname, email, phone_number, user_type FROM user", [], function (result, error)
         {
             if (result.length > 0)
             {
@@ -200,9 +181,9 @@ User.init = function(server, database)
 
 };
 
-module.exports = function (server, database)
+module.exports = function (server, databaseHelper, authenticateHelper)
 {
-    return User.init(server, database);
+    return User.init(server, databaseHelper, authenticateHelper);
 }
 
 
