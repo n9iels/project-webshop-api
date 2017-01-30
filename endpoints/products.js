@@ -1,3 +1,5 @@
+var paginate = require('restify-paginate');
+
 /**
  * Products endpoint related to products activities
  */
@@ -17,12 +19,16 @@ Products.init = function(server, database, Authenticate)
     // Endpoint for '/products/filter' to receive filtered products from the database
     server.get('products', function (req, res, next)
     {
-        var base_sql = "SELECT * FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1";
+        var base_sql = "SELECT *, (SELECT count(*) FROM game) AS total FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1";
         var query = req.query;
 
         for (var i in query)
         {
-            console.log("")
+            if (i == "page" || i == "per_page")
+            {
+                continue;
+            }
+
             if (i == "price-min" && query[i].length != 0)
             {
                 base_sql += " AND price >= " + database.escape(query[i]);
@@ -37,13 +43,23 @@ Products.init = function(server, database, Authenticate)
             }
         }
 
+        // Add pagination
+        base_sql += ' LIMIT ' + req.query.per_page + ' OFFSET ' + ((req.paginate.page - 1) * req.paginate.per_page);
+
         database.executeQuery(base_sql, [], function (result, error)
         {
-            if (result && error == null) {
-                return res.send(result);
+            if (error)
+            {
+                res.send(500, error)
             }
-
-            return res.send({message:"No results!"})
+            else if (result.length > 1)
+            {
+                res.paginate.send(result, result[0].total);
+            }
+            else
+            {
+                res.send({message:"No results!"})
+            }
           });
 
         next();
