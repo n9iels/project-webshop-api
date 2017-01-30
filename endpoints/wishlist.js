@@ -17,6 +17,7 @@ Wishlist.init = function(server, database, Authenticate)
     {
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
+        // Select ALL GAMES for CURRENT USER inside his/her WISHLIST (= Letter R in CRUD)
         database.executeQuery("SELECT * FROM game g, platform_independent_info p, wishlist w, wishlist_items wi, user u WHERE u.user_id = w.user_id AND w.wishlist_id = wi.wishlist_id AND wi.ean_number = g.ean_number AND p.pi_id = g.pi_id AND u.user_id and u.user_id = ?", [user_id], function (result)
         {
                 res.send(result);
@@ -35,6 +36,7 @@ Wishlist.init = function(server, database, Authenticate)
             res.send(422, "missing fields..")
         }
 
+        // Add GAME for CURRENT USER inside his/her WISHLIST (= Letter C in CRUD)
         database.executeQuery("INSERT INTO wishlist_items (wishlist_id, ean_number) VALUES ((SELECT wishlist_id FROM wishlist WHERE user_id = ?), ?)", [user_id, req.params.ean_number], function (result, error)
         {
             if (error)
@@ -67,6 +69,7 @@ Wishlist.init = function(server, database, Authenticate)
             res.send(422, "failed to get user_id from token");
         }
 
+        // DELETE GAME for CURRENT USER inside his/her WISHLIST (= Letter D in CRUD)
         database.executeQuery("DELETE FROM wishlist_items WHERE wishlist_items.wishlist_id = (SELECT wishlist_id FROM wishlist WHERE user_id = ?) AND wishlist_items.ean_number = ?", [user_id, req.params.ean_number], function(result, error)
         {
             if (error) {
@@ -77,10 +80,26 @@ Wishlist.init = function(server, database, Authenticate)
                 res.send("item deleted!");
             }
         })
-    })
+    });
+
+    server.patch('wishlist/switch_public', Authenticate.customer, function(req, res, next)
+    {
+        req.body = JSON.parse(req.body);
+        
+        var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
+
+        database.executeQuery("UPDATE wishlist SET is_public = ? WHERE user_id = ?", [req.body.newDBStatus, user_id], function(result, error)
+        {
+            if (error) {
+                res.send(500, error);
+            } else if (result.affectedRows == 0) {
+                res.send(404, "public state nog edited");
+            } else {
+                res.send("public state updated!");
+            }
+        })
+    });
 };
-
-
 
 module.exports = function (server, databaseHelper, authenticateHelper)
 {
