@@ -6,15 +6,21 @@ var mysql = require('mysql');
  *
  * @return {void}
  */
-function Database() {
-    this._pool = mysql.createPool({
-        host              : '178.62.235.143',
-        user              : 'webshop',
-        password          : 'HQv@1rM0KUXXjpZw09WE',
-        database          : 'webshop',
-        port              : 3306,
-        multipleStatements: true
-    });
+function Database(credentials)
+{
+    if (credentials == undefined)
+    {
+        credentials = {
+            host              : '178.62.235.143',
+            user              : 'webshop',
+            password          : 'HQv@1rM0KUXXjpZw09WE',
+            database          : 'webshop',
+            port              : 3306,
+            multipleStatements: true
+        }
+    }
+
+    this._pool = mysql.createPool(credentials);
 }
 
 /**

@@ -1,18 +1,16 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * Order endpoint related to order activities
  */
 var Order = {};
 
-Order.init = function(server, database)
+Order.init = function(server, database, Authenticate)
 {
     // Get all order for the registered user
     server.get("orders", Authenticate.customer, function(req, res, next)
     {
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
-        database.executeQuery("SELECT * FROM `order` WHERE user_id = ?", [user_id], function (result, error)
+        database.executeQuery("SELECT * FROM `order` WHERE user_id = ? ORDER BY order_number DESC", [user_id], function (result, error)
         {
             if (error)
             {
@@ -46,7 +44,7 @@ Order.init = function(server, database)
             {
                 var order = result[0];
                 
-                database.executeQuery("SELECT * FROM `orders_contain_games` WHERE user_id = ? AND order_number = ?", [user_id, req.params.order_number], function(products, error)
+                database.executeQuery("SELECT * FROM `game` g JOIN `orders_contain_games` ocg ON g.ean_number = ocg.ean_number JOIN `platform_independent_info` pi ON g.pi_id = pi.pi_id WHERE ocg.user_id = ? AND ocg.order_number = ?", [user_id, req.params.order_number], function(products, error)
                 {
                     if (error)
                     {
@@ -66,9 +64,6 @@ Order.init = function(server, database)
     // Create a new order
     server.post("orders", Authenticate.customer, function(req, res, next)
     {
-        // Parse body to JSON
-        req.body = JSON.parse(req.body);
-
         // Append the user_id to the req.body
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
         req.body.user_id = user_id;
@@ -98,38 +93,42 @@ Order.init = function(server, database)
                     delete order_content.image;
                     delete order_content.price;
 
-                    database.executeQuery("INSERT INTO `orders_contain_games` SET ?", [order_content], function(result, error, fields)
-                    {
-                        if (error)
-                        {
-                            // Check if we get a DUPLICATED_KEY error, in that case we can just increase the amount with + 1
-                            if (error.errno == 1062)
-                            {
-                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [req.body.ean_number, req.params.order_number], function(result, error)
-                                {
-                                    if (error)
-                                    {
-                                        res.send(500, error);
-                                    }
-                                });
-                            }
-                        }
-                            
-                        // Update total order_price
-                        database.executeQuery("UPDATE `order` SET total_order_price = (SELECT ROUND(SUM(g.price * ocg.amount), 2) FROM `orders_contain_games` ocg JOIN `game` g ON g.ean_number = ocg.ean_number WHERE ocg.order_number = ?) WHERE order_number = ?", [order_number, order_number], function(result, error)
-                        {
-                            if (error)
-                            {
-                                res.send(500, error)
-                            }
-                        });
-                    });
+                    insertOrder(order_content)
                 }
 
                 res.send("Order created");
             }
         })
     });
+
+    function insertOrder(order_content)
+    {
+        database.executeQuery("INSERT INTO `orders_contain_games` SET ?", [order_content], function(result, error, fields)
+        {
+            if (error)
+            {
+                // Check if we get a DUPLICATED_KEY error, in that case we can just increase the amount with + 1
+                if (error.errno == 1062)
+                {
+                    database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [order_content.ean_number, order_content.order_number], function(result, error)
+                    {
+                        if (error)
+                        {
+                            res.send(500, error);
+                        }
+                    });
+                }
+            }
+
+            database.executeQuery("UPDATE `order` SET total_order_price = (SELECT ROUND(SUM(g.price * ocg.amount), 2) FROM `orders_contain_games` ocg JOIN `game` g ON g.ean_number = ocg.ean_number WHERE ocg.order_number = ?) WHERE order_number = ?", [order_content.order_number, order_content.order_number], function(result, error)
+            {
+                if (error)
+                {
+                    res.send(500, error)
+                }
+            });
+        });
+    }
 
     // Add new products to a order
     server.post("orders/:order_number/products", Authenticate.customer, function(req, res, next)
@@ -244,7 +243,7 @@ Order.init = function(server, database)
     });
 }
 
-module.exports = function (server, database)
+module.exports = function (server, databaseHelper, authenticateHelper)
 {
-    return Order.init(server, database);
+    return Order.init(server, databaseHelper, authenticateHelper);
 }

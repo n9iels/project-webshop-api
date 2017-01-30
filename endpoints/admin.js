@@ -1,8 +1,6 @@
-var Authenticate = require('../helpers/authenticate'); 
- 
 var Admin = {} 
  
-Admin.init = function(server, database) 
+Admin.init = function(server, database, Authenticate) 
 { 
     // Endpoint for '/admin' to get info of users 
     server.get('admin/users/:id', Authenticate.admin, function (req, res, next) //, Authenticate.admin 
@@ -125,7 +123,7 @@ Admin.init = function(server, database)
 } 
  
  
-module.exports = function (server, database) 
+module.exports = function (server, databaseHelper, authenticateHelper) 
 { 
-    return Admin.init(server, database); 
+    return Admin.init(server, databaseHelper, authenticateHelper); 
 }
