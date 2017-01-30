@@ -1,18 +1,16 @@
-var Authenticate = require('../helpers/authenticate');
-
 /**
  * Order endpoint related to order activities
  */
 var Order = {};
 
-Order.init = function(server, database)
+Order.init = function(server, database, Authenticate)
 {
     // Get all order for the registered user
     server.get("orders", Authenticate.customer, function(req, res, next)
     {
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
-        database.executeQuery("SELECT * FROM `order` WHERE user_id = ?", [user_id], function (result, error)
+        database.executeQuery("SELECT * FROM `order` WHERE user_id = ? ORDER BY order_number DESC", [user_id], function (result, error)
         {
             if (error)
             {
@@ -46,7 +44,7 @@ Order.init = function(server, database)
             {
                 var order = result[0];
                 
-                database.executeQuery("SELECT * FROM `orders_contain_games` WHERE user_id = ? AND order_number = ?", [user_id, req.params.order_number], function(products, error)
+                database.executeQuery("SELECT * FROM `game` g JOIN `orders_contain_games` ocg ON g.ean_number = ocg.ean_number JOIN `platform_independent_info` pi ON g.pi_id = pi.pi_id WHERE ocg.user_id = ? AND ocg.order_number = ?", [user_id, req.params.order_number], function(products, error)
                 {
                     if (error)
                     {
@@ -105,7 +103,7 @@ Order.init = function(server, database)
                             // Check if we get a DUPLICATED_KEY error, in that case we can just increase the amount with + 1
                             if (error.errno == 1062)
                             {
-                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [req.body.ean_number, req.params.order_number], function(result, error)
+                                database.executeQuery("UPDATE `orders_contain_games` SET amount = amount + 1 WHERE ean_number = ? AND order_number = ?", [order_content.ean_number, order_content.order_number], function(result, error)
                                 {
                                     if (error)
                                     {
@@ -244,7 +242,7 @@ Order.init = function(server, database)
     });
 }
 
-module.exports = function (server, database)
+module.exports = function (server, databaseHelper, authenticateHelper)
 {
-    return Order.init(server, database);
+    return Order.init(server, databaseHelper, authenticateHelper);
 }
