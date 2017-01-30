@@ -17,13 +17,13 @@ server.use(restify.queryParser());
 server.use(restify.bodyParser());
 
 // Include endpoints
-var products = require('./endpoints/products')(server, databaseHelper, authenticateHelper);
-var user     = require('./endpoints/user')(server, databaseHelper, authenticateHelper);
-var wishlist = require('./endpoints/wishlist')(server, databaseHelper, authenticateHelper);
-var order    = require('./endpoints/order')(server, databaseHelper, authenticateHelper);
-var admin    = require('./endpoints/admin')(server, databaseHelper, authenticateHelper);
+var products     = require('./endpoints/products')(server, databaseHelper, authenticateHelper);
+var user         = require('./endpoints/user')(server, databaseHelper, authenticateHelper);
+var wishlist     = require('./endpoints/wishlist')(server, databaseHelper, authenticateHelper);
+var order        = require('./endpoints/order')(server, databaseHelper, authenticateHelper);
+var admin        = require('./endpoints/admin')(server, databaseHelper, authenticateHelper);
 var favoritelist = require('./endpoints/favoritelist')(server, databaseHelper, authenticateHelper); // HABBO: stuff
-var stats    = require('./endpoints/stats')(server, databaseHelper, authenticateHelper);
+var stats        = require('./endpoints/stats')(server, databaseHelper, authenticateHelper);
 
 // Start server and listen to port 8081
 server.listen(8081, function() {
