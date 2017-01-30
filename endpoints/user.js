@@ -21,15 +21,29 @@ User.init = function(server, database)
         var user_id = Authenticate.decodetoken(req.authorization.credentials).payload.iss;
 
         // If the post data is correctly set we can check the credentials
-        database.executeQuery("SELECT * FROM user WHERE user_id = ?", [user_id], function (result)
+        database.executeQuery("SELECT * FROM user WHERE user_id = ?", [user_id], function (result, error)
         {
-            if (result.length > 0)
+            if (error)
             {
-                res.send(result);
+                res.send(500, error)
             }
             else
             {
-                res.send(401, "Bad credentials")
+                var user = result[0];
+
+                database.executeQuery("SELECT * FROM address WHERE user_id = ?", [user_id], function (address, error)
+                {
+                    if (error)
+                    {
+                        res.send(500, error);
+                    }
+                    else
+                    {
+                        user.address = address[0];
+                        
+                        res.send(user)
+                    }
+                })
             }
         });
     });
@@ -136,37 +150,33 @@ User.init = function(server, database)
             res.send(422, "Missing fields")
         }
        
-        database.executeQuery("INSERT INTO user (email, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer], function (result, error) // insertion is not filled in
+        database.executeQuery("INSERT INTO user (email, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer], function (result, error)
         {           
             if (error)
             {
-                res.send(422, "There are missing fields or the email allready exists")
+                res.send(500, error)
             }
-            
-            //res.send("Your user information has been stored in the database")
-        });
-        console.log("first query done.");
-
-        database.executeQuery("INSERT INTO address (postal_code, house_number, user_id, street, city) VALUES (?,?,(SELECT user_id FROM user WHERE email = ?),?,?)", [postal_code, house_number, e_mail, street_name, city], function (result, error) // Query doesn't insert anything at all
-        {
-            //console.log(postal_code, house_number, e_mail, street_name, city)
-            if (error)
+            else
             {
-                res.send(422, "There are missing fields")
+                database.executeQuery("INSERT INTO address (postal_code, house_number, user_id, street, city) VALUES (?,?,?,?,?)", [postal_code, house_number, result.insertId, street_name, city], function (result, error)
+                {
+                    if (error)
+                    {
+                        res.send(422, "There are missing fields")
+                    }
+                });
+
+                database.executeQuery("INSERT INTO wishlist (is_public, user_id) VALUES (0, ?);", [result.insertId], function(result, error) 
+                { 
+                    if (error) 
+                    { 
+                        res.send(422, "There are missing fields") 
+                    } 
+                });
+
+                res.send("You have been successfully registered :p") 
             }
         });
-        console.log("second query done.");
-
-        database.executeQuery("INSERT INTO wishlist (wishlist_id, is_public, user_id) VALUES ((SELECT user_id FROM user WHERE email = ?), 0, (SELECT user_id FROM user WHERE email = ?));", [e_mail, e_mail], function(result, error) 
-        { 
-            if (error) 
-            { 
-                res.send(422, "There are missing fields") 
-            } 
- 
-            res.send("You have been successfully registered :p") 
-        }); 
-
         next();
     });
 
