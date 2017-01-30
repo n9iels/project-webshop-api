@@ -7,11 +7,56 @@ Stats.init = function(server, database, Authenticate)
     // Endpoint for '/stats/topgames' to get games bought by most users
     server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
+        // try
+        // {
+        //     var post = req.body;
+        //     // Get range from ajax
+        //     var range = post.range;
+        // }
+        // catch (err)
+        // {
+        //     res.send(422, "Missing fields")
+        // }
+
+
+        // meegeven via ajax: "month" "quarter" of "year"
+        var input = "quarter"; //this should come from ajax (res.)
+
         var cur_date = new Date(); //current date
 
-        // var cur_day = cur_date.getDate();
-        // var cur_month = cur_date.getMonth() + 1;
-        // var cur_year = cur_date.getFullYear();
+        var cur_day = cur_date.getDate();
+        var cur_month = cur_date.getMonth() + 1;
+        var cur_year = cur_date.getFullYear();
+
+        // create end date string to put in query
+        var qry_end_date = String(cur_year) + "-" + putZeroBeforeNum(cur_month) + "-" + putZeroBeforeNum(cur_day);
+        
+        // get right begin date
+        var begin_day = cur_day;
+        var begin_month = cur_month;
+        var begin_year = cur_year;
+
+        var months_earlier = 0;
+        if (input == "month") {
+            months_earlier = 1;
+        } else if (input == "quarter") {
+            months_earlier = 3;
+        } else if (input == "year") {
+            months_earlier = 12;
+        } else {
+            console.log("input has unexpected value. input = " + input);
+        }
+        while (months_earlier > 0) {
+            begin_month -= 1;
+            if (begin_month == 0) {
+                begin_year -= 1;
+                begin_month += 12;
+            }
+            months_earlier--;
+        }
+
+        // make begin date into string to put in query
+        var qry_begin_date = String(begin_year) + "-" + putZeroBeforeNum(begin_month) + "-" + putZeroBeforeNum(begin_day);
 
         // cur_day = putZeroBeforeNum(cur_day);
         // cur_
@@ -25,8 +70,11 @@ Stats.init = function(server, database, Authenticate)
         // begin_date = "'" + begin_date.getYear() + "-" + begin_date.getMonth() + "-" + cur_day.getDate() + "'";
 
 
+        //qry_begin_date
 
 
+
+        //date format: 2017-01-31
         var hoogst_aantal_users_qry =
        "SET @prev_value = NULL;\
         SET @rank_count = 0;\
@@ -42,7 +90,7 @@ Stats.init = function(server, database, Authenticate)
         JOIN orders_contain_games ocg ON o.order_number = ocg.order_number\
         JOIN game g ON g.ean_number = ocg.ean_number\
         JOIN platform_independent_info pii ON pii.pi_id = g.pi_id\
-        WHERE o.order_date BETWEEN '2017-01-01' AND '2017-01-31'\
+        WHERE o.order_date BETWEEN '" + qry_begin_date + "' AND '" + qry_end_date + "'\
         GROUP BY pii.title\
         ORDER BY user_count DESC\
                     ) as nice\
@@ -69,9 +117,13 @@ Stats.init = function(server, database, Authenticate)
     }); 
 
     function putZeroBeforeNum (num) {
-        if (parseInt(num) < 10) {
-            num = "0" + num;
+        if (parseInt(num) < 10)
+        {
+            num = "0" + String(num);
             console.log(num);
+            return num;
+        } else {
+            return num;
         }
     }
 }
