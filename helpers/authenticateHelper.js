@@ -60,9 +60,9 @@ function AuthenticateHelper(database, jwt, bcrypt)
             var password = authorization.basic.password;
 
             // Check if the username and password are valid and create session
-            self.database.executeQuery("SELECT * FROM user WHERE email = ? AND is_active = 1", [username], function (result, error)
+            self.database.executeQuery("SELECT * FROM user WHERE email = ?", [username], function (result, error)
             {
-                if (result.length > 0)
+                if (result.length > 0 && result[0].is_active == 1)
                 {
                     self.bcrypt.compare(password, result[0].password, function(err, res)
                     {
@@ -78,6 +78,11 @@ function AuthenticateHelper(database, jwt, bcrypt)
                             callback(false);
                         }
                     });
+                }
+                else if (result[0].is_active == 0)
+                {
+                    // Last parameter means blocked
+                    callback(false, null, null, true)
                 }
                 else
                 {
@@ -137,7 +142,7 @@ function AuthenticateHelper(database, jwt, bcrypt)
      */
     this.admin = function(req, res, next)
     {
-        self.authenticate(req.authorization, 'admin', function (result)
+        self.authenticate(req.authorization, 'admin', function (result, blocked)
         {
             if (result)
             {
@@ -146,7 +151,7 @@ function AuthenticateHelper(database, jwt, bcrypt)
             else
             {
                 res.send(401, {message:"Bad credentials"});
-            }
+            }        
         });
     }
 
