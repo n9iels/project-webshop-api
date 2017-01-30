@@ -7,20 +7,7 @@ Stats.init = function(server, database, Authenticate)
     // Endpoint for '/stats/topgames' to get games bought by most users
     server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
-        // try
-        // {
-        //     var post = req.body;
-        //     // Get range from ajax
-        //     var range = post.range;
-        // }
-        // catch (err)
-        // {
-        //     res.send(422, "Missing fields")
-        // }
-
-
-        // meegeven via ajax: "month" "quarter" of "year"
-        var input = "quarter"; //this should come from ajax (res.)
+        var range = req.query.range;
 
         var cur_date = new Date(); //current date
 
@@ -37,14 +24,14 @@ Stats.init = function(server, database, Authenticate)
         var begin_year = cur_year;
 
         var months_earlier = 0;
-        if (input == "month") {
+        if (range == "month") {
             months_earlier = 1;
-        } else if (input == "quarter") {
+        } else if (range == "quarter") {
             months_earlier = 3;
-        } else if (input == "year") {
+        } else if (range == "year") {
             months_earlier = 12;
         } else {
-            console.log("input has unexpected value. input = " + input);
+            console.log("range has unexpected value. range = " + range);
         }
         while (months_earlier > 0) {
             begin_month -= 1;
@@ -57,22 +44,6 @@ Stats.init = function(server, database, Authenticate)
 
         // make begin date into string to put in query
         var qry_begin_date = String(begin_year) + "-" + putZeroBeforeNum(begin_month) + "-" + putZeroBeforeNum(begin_day);
-
-        // cur_day = putZeroBeforeNum(cur_day);
-        // cur_
-
-        // var end_date = "'" + cur_year + "-" + cur_month + "-" + cur_day + "'";
-
-
-        // var begin_date = cur_date;
-        // begin_date.setMonth(cur_date.getMonth() - 3);
-
-        // begin_date = "'" + begin_date.getYear() + "-" + begin_date.getMonth() + "-" + cur_day.getDate() + "'";
-
-
-        //qry_begin_date
-
-
 
         //date format: 2017-01-31
         var hoogst_aantal_users_qry =
@@ -120,7 +91,6 @@ Stats.init = function(server, database, Authenticate)
         if (parseInt(num) < 10)
         {
             num = "0" + String(num);
-            console.log(num);
             return num;
         } else {
             return num;
