@@ -7,6 +7,8 @@ Stats.init = function(server, database, Authenticate)
     // Endpoint for '/stats/topgames' to get games bought by most users
     server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
+        // input will be: begin_date : "...-...-..." end_date : "...-...-..."
+
         var range = req.query.range;
 
         var cur_date = new Date(); //current date
@@ -96,7 +98,108 @@ Stats.init = function(server, database, Authenticate)
             return num;
         }
     }
+
+    function putGraphDataInArray(res, begin_date, end_date)
+    {
+        var graphdata_array = [];
+        // if one of the below does res.send(error) then this whole ajax call ends right?
+        graphdata_array.Push(topTenData(res, begin_date, end_date));
+        graphdata_array.Push(revenueData(res, begin_date, end_date));
+        graphdata_array.Push(useramountData(res, begin_date, end_date));
+        res.send(graphdata_array);
+    }
+
+    function topTenData(res, begin_date, end_date)
+    {
+        //date format: 2017-01-31
+        var hoogst_aantal_users_qry =
+        "SET @prev_value = NULL;\
+        SET @rank_count = 0;\
+        SELECT * \
+        FROM (\
+            SELECT stock, title, subtitle, user_count, CASE\
+                WHEN @prev_value = user_count THEN @rank_count\
+                WHEN @prev_value := user_count THEN @rank_count := @rank_count + 1\
+                END AS rank\
+            FROM ( \
+                    SELECT g.stock, pii.title, pii.subtitle, COUNT(ocg.user_id) as user_count\
+                    FROM `order` o\
+                    JOIN orders_contain_games ocg ON o.order_number = ocg.order_number\
+                    JOIN game g ON g.ean_number = ocg.ean_number\
+                    JOIN platform_independent_info pii ON pii.pi_id = g.pi_id\
+                    WHERE o.order_date BETWEEN '?' AND '?'\
+                    GROUP BY pii.title\
+                    ORDER BY user_count DESC\
+                ) as nice\
+            ) as ranked\
+        WHERE rank <= 10"
+
+        database.executeQuery(hoogst_aantal_users_qry, [begin_date, end_date], function(result, error)
+        {
+            if (error)
+            {
+                res.send(500, error)
+            }
+            else if (result.length > 0) 
+            { 
+                return result[2]; //without the [2] it sends three objects: two empty ones and the third (result[2]) containing the games
+            } 
+            else 
+            { 
+                res.send(404, "Top 10 Games: result.length !> 0"); 
+            } 
+        }) 
+    }
+    function revenueData(begin_date, end_date)
+    {
+        var rev_query = 
+       "SELECT order_date AS day , SUM( total_order_price ) AS day_price\
+        FROM `order` \
+        WHERE `status` = 'paid'\
+        AND order_date BETWEEN '?' AND '?'\
+        GROUP BY YEAR( order_date ) , MONTH( order_date ) , DAY( order_date ) \
+        ORDER BY order_date DESC "
+
+        database.executeQuery(rev_query, [begin_date, end_date], function(result, error)
+        {
+            if (error)
+            {
+                res.send(500, error)
+            }
+            else if (result.length > 0) 
+            { 
+                return result; 
+            }
+            else 
+            { 
+                res.send(404, "Revenue graph: result.length !> 0"); 
+            } 
+        }) 
+    }
+    function useramountData(begin_date, end_date)
+    {
+        var useramnt_query = 
+       ""
+
+        database.executeQuery(useramnt_query, [begin_date, end_date], function(result, error)
+        {
+            if (error)
+            {
+                res.send(500, error)
+            }
+            else if (result.length > 0) 
+            { 
+                return result;
+            }
+            else 
+            { 
+                res.send(404, "Useramount graph: result.length !> 0"); 
+            } 
+        }) 
+    }
+
 }
+
 
 module.exports = function (server, database, Authenticate)
 {
