@@ -44,7 +44,7 @@ Products.init = function(server, database, Authenticate)
         }
 
         base_sql += ' ORDER BY title';
-        base_sql += ' LIMIT ' + req.query.per_page + ' OFFSET ' + ((req.paginate.page - 1) * req.paginate.per_page);
+        base_sql += ' LIMIT ' + req.paginate.per_page + ' OFFSET ' + ((req.paginate.page - 1) * req.paginate.per_page);
         
         database.executeQuery(base_sql + "; SELECT FOUND_ROWS() AS total;", [], function (result, error)
         {

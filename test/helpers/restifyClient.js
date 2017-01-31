@@ -1,4 +1,5 @@
 const restify      = require('restify');
+const paginate       = require('restify-paginate');
 
 function RestifyClient() {
     this.server = "";
@@ -13,6 +14,7 @@ RestifyClient.prototype.createClient = function(databaseHelper, authenticationHe
     this.server.use(restify.authorizationParser());
     this.server.use(restify.queryParser());
     this.server.use(restify.bodyParser());
+    this.server.use(paginate(this.server, {hostname: false, numbersOnly: true, defaults:{page: 1,per_page: 10},}));
 
     var products        = require('../../endpoints/products')(this.server, databaseHelper, authenticationHelper);
     var user            = require('../../endpoints/user')(this.server, databaseHelper, authenticationHelper);

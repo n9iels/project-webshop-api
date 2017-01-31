@@ -17,7 +17,7 @@ describe('HTTP Status code Tests for public endpoints', function()
         {
             client.get('/products', function (err, req, res, data)
             {
-                assert.equal(res.statusCode, 200, 'invalid status code');
+                assert.equal(res.statusCode, 200, err);
                 done();
             });
         });
@@ -29,7 +29,7 @@ describe('HTTP Status code Tests for public endpoints', function()
         {
             client.get('/products/1', function (err, req, res, data)
             {
-                assert.equal(res.statusCode, 200, 'invalid status code');
+                assert.equal(res.statusCode, 200, err);
                 done();
             });
         });
@@ -41,7 +41,7 @@ describe('HTTP Status code Tests for public endpoints', function()
         {
             client.get('/public_wishlist/1', function (err, req, res, data)
             {
-                assert.equal(res.statusCode, 200, 'invalid status code');
+                assert.equal(res.statusCode, 200, err);
                 done();
             });
         });

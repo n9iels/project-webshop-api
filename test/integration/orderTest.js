@@ -34,9 +34,9 @@ describe('Integration tests for order endpoints', function()
                 "delivery_costs":3.95,
                 "cart":
                 [
-                    {"ean_number":45665465},
-                    {"ean_number":45665465},
-                    {"ean_number":9006113007210}
+                    {"ean_number":3307215785867},
+                    {"ean_number":3307215785867},
+                    {"ean_number":3307215732953}
                 ]
             }
 
@@ -84,8 +84,8 @@ describe('Integration tests for order endpoints', function()
                 client.get('/orders/1', function (err, req, res, data)
                 {
                     assert.equal(data.products.length, 2, "Not all products exists");
-                    assert.equal(data.products[0].amount, 2, "Incorrect amount");
-                    assert.equal(data.products[1].amount, 1, "Incorrect amount");
+                    assert.equal(data.products[0].amount, 1, "Incorrect amount");
+                    assert.equal(data.products[1].amount, 2, "Incorrect amount");
                     done();
                 });
             });
