@@ -38,7 +38,7 @@ Stats.init = function(server, database, Authenticate)
             {
                 res.send(500, error)
             }
-            else if (result.length > 0) 
+            else if (result.length > 0) // not sure whether this works (see comment below. put result[2] here as well?)
             { 
                 res.send(result[2]); //without the [2] it sends three objects: two empty ones and the third (result[2]) containing the games
             } 
@@ -60,9 +60,9 @@ Stats.init = function(server, database, Authenticate)
         var revenue_qry =
        "SELECT order_date, SUM(total_order_price) as day_price\
         FROM `order`\
-        WHERE `status` = 'paid' AND order_date BETWEEN '2017-01-01' AND '2017-01-30'\
+        WHERE `status` = 'paid' AND order_date BETWEEN '" + b_date + "' AND '" + e_date + "'\
         GROUP BY YEAR(order_date), MONTH(order_date), DAY(order_date)\
-        ORDER BY order_date DESC"
+        ORDER BY order_date"
 
         database.executeQuery(revenue_qry, [], function(result, error)
         {
