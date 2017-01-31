@@ -19,7 +19,7 @@ Products.init = function(server, database, Authenticate)
     // Endpoint for '/products/filter' to receive filtered products from the database
     server.get('products', function (req, res, next)
     {
-        var base_sql = "SELECT *, (SELECT count(*) FROM game) AS total FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1";
+        var base_sql = "SELECT SQL_CALC_FOUND_ROWS * FROM game g INNER JOIN platform_independent_info pi ON g.pi_id = pi.pi_id WHERE 1=1";
         var query = req.query;
 
         for (var i in query)
@@ -43,10 +43,10 @@ Products.init = function(server, database, Authenticate)
             }
         }
 
-        // Add pagination
+        base_sql += ' ORDER BY title';
         base_sql += ' LIMIT ' + req.query.per_page + ' OFFSET ' + ((req.paginate.page - 1) * req.paginate.per_page);
-
-        database.executeQuery(base_sql, [], function (result, error)
+        
+        database.executeQuery(base_sql + "; SELECT FOUND_ROWS() AS total;", [], function (result, error)
         {
             if (error)
             {
@@ -54,7 +54,7 @@ Products.init = function(server, database, Authenticate)
             }
             else if (result.length > 1)
             {
-                res.paginate.send(result, result[0].total);
+                res.paginate.send(result[0], result[1][0].total);
             }
             else
             {

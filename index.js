@@ -17,7 +17,7 @@ server.pre(restify.CORS());
 server.use(restify.authorizationParser());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
-server.use(paginate(server, {hostname: false}));
+server.use(paginate(server, {hostname: false, numbersOnly: true}));
 
 // Include endpoints
 var products        = require('./endpoints/products')(server, databaseHelper, authenticateHelper);
