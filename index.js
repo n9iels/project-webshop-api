@@ -17,6 +17,7 @@ server.pre(restify.CORS());
 server.use(restify.authorizationParser());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+server.use(restify.gzipResponse());
 server.use(paginate(server, {hostname: false, numbersOnly: true, defaults:{page: 1,per_page: 10},}));
 
 // Include endpoints
