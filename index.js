@@ -3,10 +3,12 @@ var databaseHelper     = new (require('./helpers/database'));
 var jwtHelper          = require('./helpers/jwt')(require('crypto'), require('base64url'));
 var authenticateHelper = require('./helpers/authenticateHelper')(databaseHelper, jwtHelper, require('bcrypt-nodejs'));
 var restify            = require('restify');
+var paginate           = require('restify-paginate');
 
 // Create server
 var server = restify.createServer({
-    name: 'AZ Games'
+    name: 'AZ Games',
+    hostname: "https://api.az-games.nl/"
 });
 
 // Configure restify
@@ -15,9 +17,9 @@ server.pre(restify.CORS());
 server.use(restify.authorizationParser());
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+server.use(paginate(server, {hostname: false, numbersOnly: true, defaults:{page: 1,per_page: 10},}));
 
 // Include endpoints
-
 var products        = require('./endpoints/products')(server, databaseHelper, authenticateHelper);
 var user            = require('./endpoints/user')(server, databaseHelper, authenticateHelper);
 var wishlist        = require('./endpoints/wishlist')(server, databaseHelper, authenticateHelper);

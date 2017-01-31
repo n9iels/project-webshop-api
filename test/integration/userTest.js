@@ -52,7 +52,7 @@ describe('Integration tests for user related endpoints', function()
 
     describe('/user/login', function()
     {
-        it('should successfully login and return a HTTP 200', function(done)
+        it('should return a HTTP 200 when successfully login', function(done)
         {
             client.basicAuth("test@test.nl", "test");
             client.get('/user/login', function (err, req, res, data)
@@ -61,16 +61,33 @@ describe('Integration tests for user related endpoints', function()
                 done();
             });
         });
-    });
 
-    describe('/user/login', function()
-    {
-        it('should deny access with wrong credentaisl and return a HTTP 401', function(done)
+        it('should return a HTTP 401 when providing a wrong password', function(done)
         {
             client.basicAuth("test@test.nl", "wrong");
             client.get('/user/login', function (err, req, res, data)
             {
                 assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+
+        it('should return a HTTP 401 when providing a non existing credentials', function(done)
+        {
+            client.basicAuth("does@notexists.nl", "notexists");
+            client.get('/user/login', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 401, 'invalid status code');
+                done();
+            });
+        });
+
+        it('should return a HTTP 403 for blocked users', function(done)
+        {
+            client.basicAuth("blocked@blocked.nl", "customer");
+            client.get('/user/login', function (err, req, res, data)
+            {
+                assert.equal(res.statusCode, 403, 'invalid status code');
                 done();
             });
         });
