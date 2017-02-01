@@ -5,48 +5,12 @@ var Stats = {}
 Stats.init = function(server, database, Authenticate) 
 {
     // Endpoint for '/stats/topgames' to get games bought by most users
-    server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
+    server.get('stats/topgames', function (req, res, next) // NOTICE: 'stats/:month'
     { 
-        var range = req.query.range;
+        var b_date = req.query.b_date;
+        var e_date = req.query.e_date;
 
-        var cur_date = new Date(); //current date
-
-        var cur_day = cur_date.getDate();
-        var cur_month = cur_date.getMonth() + 1;
-        var cur_year = cur_date.getFullYear();
-
-        // create end date string to put in query
-        var qry_end_date = String(cur_year) + "-" + putZeroBeforeNum(cur_month) + "-" + putZeroBeforeNum(cur_day);
-        
-        // get right begin date
-        var begin_day = cur_day;
-        var begin_month = cur_month;
-        var begin_year = cur_year;
-
-        var months_earlier = 0;
-        if (range == "month") {
-            months_earlier = 1;
-        } else if (range == "quarter") {
-            months_earlier = 3;
-        } else if (range == "year") {
-            months_earlier = 12;
-        } else {
-            console.log("range has unexpected value. range = " + range);
-        }
-        while (months_earlier > 0) {
-            begin_month -= 1;
-            if (begin_month == 0) {
-                begin_year -= 1;
-                begin_month += 12;
-            }
-            months_earlier--;
-        }
-
-        // make begin date into string to put in query
-        var qry_begin_date = String(begin_year) + "-" + putZeroBeforeNum(begin_month) + "-" + putZeroBeforeNum(begin_day);
-
-        //date format: 2017-01-31
-        var hoogst_aantal_users_qry =
+        var topgames_qry =
        "SET @prev_value = NULL;\
         SET @rank_count = 0;\
         SELECT * \
@@ -61,20 +25,20 @@ Stats.init = function(server, database, Authenticate)
         JOIN orders_contain_games ocg ON o.order_number = ocg.order_number\
         JOIN game g ON g.ean_number = ocg.ean_number\
         JOIN platform_independent_info pii ON pii.pi_id = g.pi_id\
-        WHERE o.order_date BETWEEN '" + qry_begin_date + "' AND '" + qry_end_date + "'\
+        WHERE o.order_date BETWEEN '" + b_date + "' AND '" + e_date + "'\
         GROUP BY pii.title\
         ORDER BY user_count DESC\
                     ) as nice\
             ) as ranked\
         WHERE rank <= 10"
 
-        database.executeQuery(hoogst_aantal_users_qry, [], function(result, error)
+        database.executeQuery(topgames_qry, [], function(result, error)
         {
             if (error)
             {
                 res.send(500, error)
             }
-            else if (result.length > 0) 
+            else if (result.length > 0) // not sure whether this works (see comment below. put result[2] here as well?)
             { 
                 res.send(result[2]); //without the [2] it sends three objects: two empty ones and the third (result[2]) containing the games
             } 
@@ -85,18 +49,68 @@ Stats.init = function(server, database, Authenticate)
         }) 
  
         next(); 
-    }); 
+    })
 
-    function putZeroBeforeNum (num) {
-        if (parseInt(num) < 10)
+    // Endpoint for '/stats/rev' to get revenue per day
+    server.get('stats/rev', function (req, res, next) // NOTICE: 'stats/:month'
+    { 
+        var b_date = req.query.b_date;
+        var e_date = req.query.e_date;
+
+        var revenue_qry =
+       "SELECT order_date, SUM(total_order_price) as day_price\
+        FROM `order`\
+        WHERE `status` = 'paid' AND order_date BETWEEN '" + b_date + "' AND '" + e_date + "'\
+        GROUP BY YEAR(order_date), MONTH(order_date), DAY(order_date)\
+        ORDER BY order_date"
+
+        database.executeQuery(revenue_qry, [], function(result, error)
         {
-            num = "0" + String(num);
-            return num;
-        } else {
-            return num;
-        }
-    }
+            if (error)
+            {
+                res.send(500, error)
+            }
+            else if (result.length > 0) 
+            { 
+                res.send(result);
+            } 
+            else 
+            { 
+                res.send(404, "result.length !> 0"); 
+            } 
+        }) 
+ 
+        next(); 
+    })
+
+    // Endpoint for '/stats/useramnt' to get user amount per day
+    server.get('stats/useramnt', function (req, res, next) // NOTICE: 'stats/:month'
+    { 
+        var b_date = req.query.b_date;
+        var e_date = req.query.e_date;
+
+        var useramnt_qry = "SELECT registration_date FROM `user` WHERE registration_date BETWEEN '1900-01-01' AND '" + e_date + "' ORDER BY registration_date";
+
+        database.executeQuery(useramnt_qry, [], function(result, error)
+        {
+            if (error)
+            {
+                res.send(500, error)
+            }
+            else if (result.length > 0) 
+            { 
+                res.send(result);
+            } 
+            else 
+            { 
+                res.send(404, "result.length !> 0"); 
+            } 
+        }) 
+ 
+        next(); 
+    })
 }
+
 
 module.exports = function (server, database, Authenticate)
 {
