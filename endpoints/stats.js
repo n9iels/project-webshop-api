@@ -5,7 +5,7 @@ var Stats = {}
 Stats.init = function(server, database, Authenticate) 
 {
     // Endpoint for '/stats/topgames' to get games bought by most users
-    server.get('stats/topgames', function (req, res, next) // NOTICE: 'stats/:month'
+    server.get('stats/topgames', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
         var b_date = req.query.b_date;
         var e_date = req.query.e_date;
@@ -52,7 +52,7 @@ Stats.init = function(server, database, Authenticate)
     })
 
     // Endpoint for '/stats/rev' to get revenue per day
-    server.get('stats/rev', function (req, res, next) // NOTICE: 'stats/:month'
+    server.get('stats/rev', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
         var b_date = req.query.b_date;
         var e_date = req.query.e_date;
@@ -84,7 +84,7 @@ Stats.init = function(server, database, Authenticate)
     })
 
     // Endpoint for '/stats/useramnt' to get user amount per day
-    server.get('stats/useramnt', function (req, res, next) // NOTICE: 'stats/:month'
+    server.get('stats/useramnt', Authenticate.admin, function (req, res, next) // NOTICE: 'stats/:month'
     { 
         var b_date = req.query.b_date;
         var e_date = req.query.e_date;
