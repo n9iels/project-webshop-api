@@ -1,7 +1,7 @@
+DROP TABLE IF EXISTS `order`;
+DROP TABLE IF EXISTS `orders_contain_games`;
 DROP TABLE IF EXISTS `wishlist`;
 DROP table IF EXISTS `address`;
-DROP TABLE IF EXISTS `orders_contain_games`;
-DROP TABLE IF EXISTS `order`;
 DROP TABLE IF EXISTS `user`;
 DROP TABLE IF EXISTS `game`;
 DROP TABLE IF EXISTS `platform_independent_info`;
@@ -12,18 +12,19 @@ CREATE TABLE IF NOT EXISTS `user` (
   `user_type` varchar(10) NOT NULL DEFAULT 'customer',
   `email` varchar(100) NOT NULL,
   `password` varchar(255) NOT NULL,
+  `registration_date` date NOT NULL,
   `first_name` varchar(100) NOT NULL,
   `insertion` varchar(100) DEFAULT NULL,
   `surname` varchar(100) NOT NULL,
   `gender` varchar(10) NOT NULL,
   `date_of_birth` date NOT NULL,
-  `phone_number` int(11) NOT NULL,
+  `phone_number` bigint(20) NOT NULL,
   `is_active` int(11) NOT NULL DEFAULT '1',
   `secret_question` text,
   `secret_question_answer` text,
   PRIMARY KEY (`user_id`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 INSERT INTO `user` (`user_id`, `user_type`, `email`, `password`, `first_name`, `insertion`, `surname`, `gender`, `date_of_birth`, `phone_number`, `is_active`, `secret_question`, `secret_question_answer`) VALUES
 (1, 'customer', 'customer@customer.nl', '$2a$10$r8nfO01Lu2V2kCFw1SuCeO.4/RPBOaqSbP1fyYHCCrIzyklnBDbFm', 'customer', '', 'customer', 'male', '2000-01-01', 0, 1, '1', 'customer'),
@@ -38,7 +39,7 @@ CREATE TABLE IF NOT EXISTS `address` (
   `street` varchar(100) NOT NULL,
   `city` varchar(100) NOT NULL,
   PRIMARY KEY (`postal_code`,`house_number`,`user_id`),
-  KEY `user_id` (`user_id`)
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 /* Create `wishlist` table */
@@ -47,7 +48,7 @@ CREATE TABLE IF NOT EXISTS `wishlist` (
   `is_public` int(11) NOT NULL DEFAULT '0',
   `user_id` int(11) DEFAULT NULL,
   PRIMARY KEY (`wishlist_id`),
-  KEY `user_id` (`user_id`)
+  FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1;
 
 /* Create `order` table */
@@ -75,34 +76,6 @@ CREATE TABLE IF NOT EXISTS `orders_contain_games` (
   KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
-/* Create game table */
-CREATE TABLE IF NOT EXISTS `game` (
-  `ean_number` bigint(20) NOT NULL,
-  `platform` varchar(30) NOT NULL,
-  `release_date` date NOT NULL,
-  `pegi_age` int(11) NOT NULL,
-  `stock` int(11) NOT NULL DEFAULT '0',
-  `price` double NOT NULL,
-  `image` varchar(255) DEFAULT NULL,
-  `pi_id` int(11) NOT NULL,
-  PRIMARY KEY (`ean_number`),
-  KEY `pi_id` (`pi_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-INSERT INTO `game` (`ean_number`, `platform`, `release_date`, `pegi_age`, `stock`, `price`, `image`, `pi_id`) VALUES
-(3307215785867, 'PS4', '2014-09-11', 18, 559, 32.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/7/3/4/6/9200000038446437.jpg', 1),
-(3307215732953, 'PS4', '2014-05-16', 18, 265, 29.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/3/1/9/6/1004004013556913.jpg', 2),
-(5030930113759, 'PC', '2016-10-21', 18, 1520, 49.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/7/8/4/3/9200000058463487.jpg', 3),
-(5030941112437, 'XBOX ONE', '2015-03-19', 18, 657, 17.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/1/3/4/0/9200000028780431.jpg', 4),
-(5035223116370, 'PS4', '2016-09-29', 18, 359, 57.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/6/2/7/7/9200000059237726.jpg', 5),
-(606060606, 'NES', '2001-01-01', 3, 0, 299.99, 'https://www.mariowiki.com/images/thumb/d/d2/SMB3_Boxart.PNG/250px-SMB3_Boxart.PNG', 6),
-(48949865, 'NES', '1993-01-01', 3, 0, 19, 'https://upload.wikimedia.org/wikipedia/en/a/ae/Kirby''s_Adventure_Coverart.png', 7),
-(2750073662947, 'Nintendo Switch', '2017-03-02', 12, 0, 58.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/5/5/9/2/9200000073662955.jpg', 8),
-(123456789027328, 'PS1', '1997-03-20', 12, 1, 29.99, 'https://upload.wikimedia.org/wikipedia/en/c/cf/Castlevania_SOTN_PAL.jpg', 9),
-(5615656566, 'N64', '2000-10-01', 3, 3, 39.99, 'https://www.mariowiki.com/images/thumb/b/b2/Papermario.PNG/450px-Papermario.PNG', 10),
-(711719158363, 'PS3', '2013-08-01', 18, 248, 16.95, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/1/7/7/6/1004004011326771.jpg', 11),
-(45665465, 'PS2', '2002-10-27', 18, 50, 54.99, 'https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg', 12);
-
 /* Create `platform_indipendent_info` table */
 CREATE TABLE IF NOT EXISTS `platform_independent_info` (
   `pi_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -128,3 +101,31 @@ INSERT INTO `platform_independent_info` (`pi_id`, `publisher`, `title`, `subtitl
 (10, 'Nintendo', 'Paper Mario', 'Paper Mario', 'RPG', 'Paper Mario', 'Thinner Mario, Bigger Adventure!'),
 (11, 'Sony', 'God of War 3 - Essentials Edition', 'Essentials Edition', 'Avontuur', 'God of War', 'God Of War III vertelt het verhaal van een getergde Kratos die wraak wil voor alles wat hem is aangedaan. Hij mengt zich in een oorlog met de Goden van de Griekse oudheid en komt in epische gevechten terecht waarbij iedereen die op zijn pad komt het onderspit moet delven!\n\nIn God Of War III wordt de PS3 tot het uiterste gedreven. De vijanden komen in ongekende aantallen op je afgestormd, terwijl de camera regelmatig naar duizelingwekkende hoogte klimt. De epische schaal van God Of War III wordt pas echt duidelijk als je op een Titan zit die complete steden met zijn handen kan vermorzelen!\n\nDe mythologische wezens zijn niet langer enkel voer voor de gewelddadige uitspattingen van Kratos, maar ook handige hulpmiddelen. Door wezens als de Cycloop te berijden, kun je bepaalde verborgen plekken bereiken of vijanden snel aan stukken scheuren!\n\nKratos heeft in God Of War III een stuk meer wapens tot zijn beschikking. Zo heeft hij een ijzeren klauw met de naam Cestus waarmee hij er flink op los kan beuken. Daarnaast leer je constant nieuwe bewegingen, zoals de mogelijkheid om met een vijand als een heuse stormram door grote groepen heen te beuken!\n\nGewapend met je trouwe kettingzwaarden slacht je duistere mythologische wezens af en los je puzzels op om uiteindelijk Olympus en de machtige Zeus te vernietigen. Speel het prachtige sluitstuk van de God of War-serie en geef Kratos zijn welverdiende wraak!'),
 (12, 'Rockstar', 'Grand Theft Auto: Vice City', 'Vice City', 'Actie', 'Grand Theft Auto', 'Grand Theft Auto - Vice City speelt zich zo''n twintig jaar eerder af dan GRAND THEFT AUTO III en voert je terug naar de tachtiger jaren van de vorige eeuw die de wereld meer geld, meer glamour, meer grote auto''s, maar ook meer drugs, criminaliteit, en decadentie brachten.Maak kennis met Tommy Vercetti, een gangster uit Liberty City die al een behoorlijke tijd meedraait in het misdaadwereldje en die net een gevangenisstraf van 15 jaar heeft uitgezeten. Noodgedwongen heeft Tommy Liberty City achter zich gelaten en is hij uitgeweken naar Vice City waar hij het criminele koninkrijk van de Forelli''s in opdracht van ene Sonny Forelli stevig moet gaan uitbreiden. Hij krijgt hiervoor een flinke som geld tot zijn beschikking die hij echter al tijdens zijn eerste opdracht verliest waardoor hij zich de woede van Sonny Forelli op de hals haalt. Dankzij zijn connecties met de onderwereld weet Tommy zich te redden..Maak in de eerste missie kennis met de advocaat van de Forelli-familie. Hij nodigt je uit op een bootfeestje waar alle hoofdrolspelers van de misdaadwereld van Vice City aanwezig zijn; hier start je nieuwe misdaadcarriere.');
+
+/* Create game table */
+CREATE TABLE IF NOT EXISTS `game` (
+  `ean_number` bigint(20) NOT NULL,
+  `platform` varchar(30) NOT NULL,
+  `release_date` date NOT NULL,
+  `pegi_age` int(11) NOT NULL,
+  `stock` int(11) NOT NULL DEFAULT '0',
+  `price` double NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
+  `pi_id` int(11) NOT NULL,
+  PRIMARY KEY (`ean_number`),
+  FOREIGN KEY (`pi_id`) REFERENCES `platform_independent_info` (`pi_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+INSERT INTO `game` (`ean_number`, `platform`, `release_date`, `pegi_age`, `stock`, `price`, `image`, `pi_id`) VALUES
+(3307215785867, 'PS4', '2014-09-11', 18, 559, 32.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/7/3/4/6/9200000038446437.jpg', 1),
+(3307215732953, 'PS4', '2014-05-16', 18, 265, 29.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/3/1/9/6/1004004013556913.jpg', 2),
+(5030930113759, 'PC', '2016-10-21', 18, 1520, 49.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/7/8/4/3/9200000058463487.jpg', 3),
+(5030941112437, 'XBOX ONE', '2015-03-19', 18, 657, 17.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/1/3/4/0/9200000028780431.jpg', 4),
+(5035223116370, 'PS4', '2016-09-29', 18, 359, 57.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/6/2/7/7/9200000059237726.jpg', 5),
+(606060606, 'NES', '2001-01-01', 3, 0, 299.99, 'https://www.mariowiki.com/images/thumb/d/d2/SMB3_Boxart.PNG/250px-SMB3_Boxart.PNG', 6),
+(48949865, 'NES', '1993-01-01', 3, 0, 19, 'https://upload.wikimedia.org/wikipedia/en/a/ae/Kirby''s_Adventure_Coverart.png', 7),
+(2750073662947, 'Nintendo Switch', '2017-03-02', 12, 0, 58.99, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/5/5/9/2/9200000073662955.jpg', 8),
+(123456789027328, 'PS1', '1997-03-20', 12, 1, 29.99, 'https://upload.wikimedia.org/wikipedia/en/c/cf/Castlevania_SOTN_PAL.jpg', 9),
+(5615656566, 'N64', '2000-10-01', 3, 3, 39.99, 'https://www.mariowiki.com/images/thumb/b/b2/Papermario.PNG/450px-Papermario.PNG', 10),
+(711719158363, 'PS3', '2013-08-01', 18, 248, 16.95, 'https://s.s-bol.com/imgbase0/imagebase3/large/FC/1/7/7/6/1004004011326771.jpg', 11),
+(45665465, 'PS2', '2002-10-27', 18, 50, 54.99, 'https://upload.wikimedia.org/wikipedia/en/c/ce/Vice-city-cover.jpg', 12);
