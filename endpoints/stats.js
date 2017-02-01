@@ -20,7 +20,7 @@ Stats.init = function(server, database, Authenticate)
                 WHEN @prev_value := user_count THEN @rank_count := @rank_count + 1\
                 END AS rank\
             FROM ( \
-        SELECT g.stock, pii.title, pii.subtitle, COUNT(ocg.user_id) as user_count\
+        SELECT g.stock, pii.title, pii.subtitle, COUNT(DISTINCT ocg.user_id) as user_count\
         FROM `order` o\
         JOIN orders_contain_games ocg ON o.order_number = ocg.order_number\
         JOIN game g ON g.ean_number = ocg.ean_number\
