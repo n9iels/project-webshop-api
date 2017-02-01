@@ -39,7 +39,8 @@ describe('Integration tests for user related endpoints', function()
                 "postal_code":"123AB",
                 "number":1,
                 "street_name":"test",
-                "city":"test"
+                "city":"test",
+                "registration_date":new Date()
             }
 
             client.post('/user/register', user, function (err, req, res, data)
