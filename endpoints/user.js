@@ -129,13 +129,14 @@ User.init = function(server, database, Authenticate)
             var house_number = post.number;
             var street_name = post.street_name;
             var city = post.city;
+            var registration_date = post.registration_date;
         }
         catch (err)
         {
             res.send(422, "Missing fields")
         }
        
-        database.executeQuery("INSERT INTO user (email, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer) VALUES (?,?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer], function (result, error)
+        database.executeQuery("INSERT INTO user (email, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer, registration_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)", [e_mail, password, first_name, insertion, surname, gender, date_of_birth, phone_number, secret_question, secret_question_answer, registration_date], function (result, error)
         {           
             if (error)
             {
